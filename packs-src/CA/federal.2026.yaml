@@ -1,0 +1,79 @@
+# Canada, federal layer, tax year 2026.
+# Tier is "partial": income tax, CPP/CPP2 and EI are modelled; several credits are not.
+# Income-tax golden tests stay `pending` until official calculator runs are recorded.
+schema: 1
+id: CA-2026
+kind: country
+region: { country: CA }
+valid: { from: 2026-01-01, to: 2026-12-31 }
+revision: 1
+tier: partial
+currency: CAD
+requires_engine: ">=1.0"
+labels: { en: "Canada (2026)", fr: "Canada (2026)" }
+
+sources:
+  cra_rates: { authority: official, title: "CRA: Canadian income tax rates for individuals", retrieved: 2026-11-10 }
+  cra_cpp:   { authority: official, title: "CRA: CPP contribution rates, maximums and exemptions", retrieved: 2026-11-10 }
+  cra_ei:    { authority: official, title: "CRA: EI premium rates and maximums", retrieved: 2026-11-10 }
+
+parameters:
+  fed.brackets:
+    source: cra_rates
+    value:
+      - { up_to: 58523,  rate: 0.14 }
+      - { up_to: 117045, rate: 0.205 }
+      - { up_to: 181440, rate: 0.26 }
+      - { up_to: 258482, rate: 0.29 }
+      - { rate: 0.33 }
+  fed.credit_rate:
+    source: cra_rates
+    value: 0.14
+  fed.bpa:
+    source: cra_rates
+    value: { max: 16452, min: 14829, from: 181440, to: 258482 }
+  cpp:
+    source: cra_cpp
+    value: { rate: 0.0595, exemption: 3500, ympe: 74600, yampe: 85000, rate2: 0.04 }
+  ei:
+    source: cra_ei
+    value: { rate: 0.0163, max_insurable: 68900 }
+
+inputs:
+  gross_annual: { type: money, label: "Annual gross employment income" }
+
+rules:
+  # Simplifications, listed under not_modelled below: taxable and net income are
+  # taken as gross income (no enhanced-CPP deduction, no other deductions).
+  - { id: pensionable, expr: gross_annual }
+  - { id: insurable, expr: gross_annual }
+  - { id: net_income, expr: gross_annual }
+  - { id: taxable_income, expr: net_income }
+
+  - id: cpp.base
+    label: { en: "CPP contributions" }
+    expr: clamp(pensionable - $cpp.exemption, 0, $cpp.ympe - $cpp.exemption) * $cpp.rate
+  - id: cpp.second
+    label: { en: "CPP2 contributions" }
+    expr: clamp(pensionable - $cpp.ympe, 0, $cpp.yampe - $cpp.ympe) * $cpp.rate2
+  - id: ei.premium
+    label: { en: "EI premium" }
+    expr: min(insurable, $ei.max_insurable) * $ei.rate
+  - id: fed.bpa_amount
+    label: { en: "Federal basic personal amount" }
+    expr: phase_down(net_income, $fed.bpa)
+  - id: fed.tax
+    label: { en: "Federal income tax" }
+    note: "Brackets less the basic personal amount credit only."
+    expr: max(0, bracket(taxable_income, $fed.brackets) - $fed.credit_rate * fed.bpa_amount)
+
+outputs:
+  income_tax:    [fed.tax]
+  contributions: [cpp.base, cpp.second, ei.premium]
+
+not_modelled:
+  - canada_employment_amount
+  - cpp_enhanced_deduction_and_base_credit
+  - ei_credit
+  - other_non_refundable_credits
+  - quebec_abatement_and_qpp

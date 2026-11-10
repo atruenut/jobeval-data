@@ -1,0 +1,109 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read pinned engine ref
+        id: engine
+        run: echo "ref=$(tr -d '[:space:]' < .engine-ref)" >> "$GITHUB_OUTPUT"
+
+      # The engine lives in the app repo. If that repo is private, add a read-only
+      # fine-grained token as the APP_REPO_TOKEN secret; otherwise the default token is used.
+      - name: Check out the engine
+        uses: actions/checkout@v4
+        with:
+          repository: atruenut/jobeval-app
+          ref: ${{ steps.engine.outputs.ref }}
+          path: engine
+          token: ${{ secrets.APP_REPO_TOKEN || github.token }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r tools/requirements.txt
+
+      - name: Build eval-cli
+        run: |
+          cmake -S engine -B engine/build -DCMAKE_BUILD_TYPE=Release -DJOBEVAL_BUILD_TESTS=OFF
+          cmake --build engine/build --target eval-cli -j
+
+      - name: Compile packs and tests
+        run: python3 tools/build.py compile
+
+      - name: Validate packs
+        run: engine/build/eval-cli validate dist/packs
+
+      - name: Golden tests
+        run: engine/build/eval-cli test --packs dist/packs dist/tests
+
+      - name: Build catalog
+        run: python3 tools/build.py manifest
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: |
+            dist/index.json
+            dist/packs
+          if-no-files-found: error
+
+  publish:
+    needs: build
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    env:
+      # Public half of the pack-signing key; the app embeds the same value.
+      PACK_SIGNING_PUBLIC_KEY: RWTO7IvPGG06wlW/mdSpbzkrKXHcF9xgPI5AOWBeei+EJPZ/dQw16RrC
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: site
+
+      - name: Sign the catalog
+        env:
+          PACK_SIGNING_KEY: ${{ secrets.PACK_SIGNING_KEY }}
+          PACK_SIGNING_PASSWORD: ${{ secrets.PACK_SIGNING_PASSWORD }}
+        run: |
+          if [ -z "$PACK_SIGNING_KEY" ]; then
+            echo "::warning::PACK_SIGNING_KEY is not set: publishing an UNSIGNED dev catalog"
+            exit 0
+          fi
+          sudo apt-get update -qq && sudo apt-get install -y -qq minisign
+          key="$RUNNER_TEMP/minisign.key"
+          umask 077
+          printf '%s\n' "$PACK_SIGNING_KEY" > "$key"
+          # A key made without a password ignores stdin; one with a password reads it from here.
+          printf '%s\n' "$PACK_SIGNING_PASSWORD" | minisign -S -s "$key" -m site/index.json -x site/index.json.minisig
+          rm -f "$key"
+          # Self-check: the signature must verify against the public key the app embeds.
+          minisign -V -P "$PACK_SIGNING_PUBLIC_KEY" -m site/index.json -x site/index.json.minisig
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deploy
+        uses: actions/deploy-pages@v4
