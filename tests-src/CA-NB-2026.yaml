@@ -1,0 +1,82 @@
+# Golden tests for CA-NB-2026.
+#   official: expected values taken from an official calculator run (inputs and date recorded)
+#   derived:  independent arithmetic from the published parameters (catches wiring errors only)
+#   pending:  awaiting a reference value; skipped, never counted as passed
+suite: CA-NB-2026
+pack: CA-NB-2026
+tolerance: { abs: 0.01 }
+cases:
+  - id: cpp-ei-mid-50k
+    status: derived
+    inputs: { gross_annual: 50000, as_of: 2026-11-10 }
+    expect: { cpp.base: 2766.75, cpp.second: 0, ei.premium: 815.00 }
+
+  - id: cpp-under-exemption
+    status: derived
+    inputs: { gross_annual: 3000, as_of: 2026-11-10 }
+    expect: { cpp.base: 0, cpp.second: 0, ei.premium: 48.90 }
+
+  - id: cpp-at-ympe-and-ei-cap
+    status: derived
+    inputs: { gross_annual: 74600, as_of: 2026-11-10 }
+    expect: { cpp.base: 4230.45, cpp.second: 0, ei.premium: 1123.07 }
+
+  - id: cpp2-zone-80k
+    status: derived
+    inputs: { gross_annual: 80000, as_of: 2026-11-10 }
+    expect: { cpp.base: 4230.45, cpp.second: 216.00, ei.premium: 1123.07 }
+
+  - id: cpp2-capped-at-yampe
+    status: derived
+    inputs: { gross_annual: 120000, as_of: 2026-11-10 }
+    expect: { cpp.base: 4230.45, cpp.second: 416.00, ei.premium: 1123.07 }
+
+  - id: nb-overtime-wage-below-floor
+    status: derived
+    inputs: { wage: 20.00, as_of: 2026-11-10, gross_annual: 40000 }
+    expect: { nb.overtime_hourly: 23.85 }
+
+  - id: nb-overtime-wage-above-floor
+    status: derived
+    inputs: { wage: 30.00, as_of: 2026-11-10, gross_annual: 60000 }
+    expect: { nb.overtime_hourly: 30.00 }
+
+  - id: nb-overtime-before-april-2026-increase
+    status: derived
+    inputs: { wage: 0, as_of: 2026-03-31, gross_annual: 0 }
+    expect: { nb.overtime_hourly: 23.475 }
+
+  - id: nb-overtime-on-increase-date
+    status: derived
+    inputs: { wage: 0, as_of: 2026-04-01, gross_annual: 0 }
+    expect: { nb.overtime_hourly: 23.85 }
+
+  # Arithmetic of the pack as written (brackets less the basic personal amount credit,
+  # no other credits). NOT official figures: useful for catching wiring mistakes at
+  # bracket edges until the official runs below are recorded.
+  - id: fed-bracket-wiring-at-first-edge
+    status: derived
+    inputs: { gross_annual: 58523, as_of: 2026-11-10 }
+    expect: { fed.tax: 5889.94 }
+
+  - id: fed-bracket-wiring-80k
+    status: derived
+    inputs: { gross_annual: 80000, as_of: 2026-11-10 }
+    expect: { fed.tax: 10292.725 }
+
+  - id: nb-bracket-wiring-75k
+    status: derived
+    inputs: { gross_annual: 75000, as_of: 2026-11-10 }
+    expect: { nb.tax: 6808.266 }
+
+  - id: bpa-phase-down-200k
+    status: derived
+    inputs: { gross_annual: 200000, as_of: 2026-11-10 }
+    expect: { fed.bpa_amount: 16061.01 }
+
+  # To be filled from the CRA Payroll Deductions Online Calculator (NB, 2026, biweekly,
+  # default TD1), one run per gross listed in docs/OFFICIAL_RUNS.md.
+  - id: official-tax-50k
+    status: pending
+    inputs: { gross_annual: 50000, as_of: 2026-11-10 }
+    expect: { fed.tax: null, nb.tax: null }

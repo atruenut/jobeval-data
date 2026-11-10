@@ -1,0 +1,66 @@
+# New Brunswick, provincial layer, tax year 2026. Extends CA-2026.
+schema: 1
+id: CA-NB-2026
+kind: subregion
+extends: CA-2026
+region: { country: CA, subregion: NB }
+valid: { from: 2026-01-01, to: 2026-12-31 }
+revision: 1
+tier: partial
+requires_engine: ">=1.0"
+labels: { en: "New Brunswick (2026)", fr: "Nouveau-Brunswick (2026)" }
+
+sources:
+  nb_tax:      { authority: official, title: "CRA payroll deductions tables: New Brunswick", retrieved: 2026-11-10 }
+  gnb_minwage: { authority: official, title: "Government of New Brunswick: minimum wage", url: "https://www.gnb.ca/en/gov/engagement-consultation/minimum-wage.html", retrieved: 2026-11-10 }
+
+parameters:
+  nb.brackets:
+    source: nb_tax
+    value:
+      - { up_to: 52333,  rate: 0.094 }
+      - { up_to: 104666, rate: 0.14 }
+      - { up_to: 193861, rate: 0.16 }
+      - { rate: 0.195 }
+  nb.credit_rate:
+    source: nb_tax
+    value: 0.094
+  nb.bpa:
+    source: nb_tax
+    value: 13664
+  min_wage:
+    effective:
+      - { from: 2025-04-01, value: 15.65, source: gnb_minwage }
+      - { from: 2026-04-01, value: 15.90, source: gnb_minwage }
+  nb.overtime_after_hours:
+    source: gnb_minwage
+    value: 44
+
+inputs:
+  wage: { type: money, label: "Hourly wage", default: 0 }
+
+rules:
+  - id: nb.tax
+    label: { en: "New Brunswick income tax" }
+    note: "Brackets less the basic personal amount credit only."
+    expr: max(0, bracket(taxable_income, $nb.brackets) - $nb.credit_rate * $nb.bpa)
+  # NB computes overtime at 1.5x the minimum wage, not 1.5x the worker's wage; a
+  # worker already paid above that rate gets no extra statutory premium.
+  - id: nb.overtime_hourly
+    public: true
+    label: { en: "Statutory minimum overtime rate" }
+    expr: max(wage, 1.5 * $min_wage)
+  - id: nb.overtime_threshold_hours
+    public: true
+    label: { en: "Overtime starts after (hours per week)" }
+    expr: $nb.overtime_after_hours
+
+append:
+  income_tax: [nb.tax]
+
+statutory:
+  min_wage: $min_wage
+
+not_modelled:
+  - nb_low_income_tax_reduction
+  - nb_other_credits
