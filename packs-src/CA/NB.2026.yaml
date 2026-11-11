@@ -5,7 +5,7 @@ kind: subregion
 extends: CA-2026
 region: { country: CA, subregion: NB }
 valid: { from: 2026-01-01, to: 2026-12-31 }
-revision: 1
+revision: 2
 tier: partial
 requires_engine: ">=1.0"
 labels: { en: "New Brunswick (2026)", fr: "Nouveau-Brunswick (2026)" }
@@ -42,8 +42,8 @@ inputs:
 rules:
   - id: nb.tax
     label: { en: "New Brunswick income tax" }
-    note: "Brackets less the basic personal amount credit only."
-    expr: max(0, bracket(taxable_income, $nb.brackets) - $nb.credit_rate * $nb.bpa)
+    note: "Brackets less the lowest-rate credit on the basic personal amount, CPP base portion and EI."
+    expr: max(0, bracket(taxable_income, $nb.brackets) - $nb.credit_rate * ($nb.bpa + cpp.base_credit_amount + ei.premium))
   # NB computes overtime at 1.5x the minimum wage, not 1.5x the worker's wage; a
   # worker already paid above that rate gets no extra statutory premium.
   - id: nb.overtime_hourly
@@ -57,6 +57,12 @@ rules:
 
 append:
   income_tax: [nb.tax]
+
+# Standard slots read by the app for statutory overtime (weekly hours threshold and the
+# minimum hourly rate that applies beyond it).
+outputs:
+  overtime_rate: [nb.overtime_hourly]
+  overtime_threshold_hours: [nb.overtime_threshold_hours]
 
 statutory:
   min_wage: $min_wage

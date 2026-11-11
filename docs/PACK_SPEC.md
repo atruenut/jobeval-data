@@ -88,6 +88,23 @@ A bundle's tier is the weakest in its extends chain.
 - Currency must match the parent's.
 - A rule id may not equal an input name.
 
+## Standard names (the contract with the app)
+
+The app is jurisdiction-blind, so it finds results through fixed names. A pack that omits
+one simply contributes nothing for it.
+
+| Kind | Name | Meaning |
+|---|---|---|
+| input (supplied by app) | `gross_annual` | Annual gross employment pay for the job being evaluated, including statutory overtime |
+| input (supplied by app) | `wage` | Hourly wage |
+| slot | `income_tax` | Employee income taxes (annual); every rule in the slot is shown as a line |
+| slot | `contributions` | Employee social contributions (annual), e.g. pension and insurance premiums |
+| slot | `overtime_rate` | One rule: the minimum hourly rate that applies beyond the threshold below |
+| slot | `overtime_threshold_hours` | One rule: weekly hours after which the overtime rate applies |
+
+Other inputs a pack declares are shown to the user with their `label` and `default`.
+Tax figures are computed as if the job were the person's only income for a full tax year.
+
 ## Rule language
 
 ```

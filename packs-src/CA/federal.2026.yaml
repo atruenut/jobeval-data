@@ -1,12 +1,14 @@
 # Canada, federal layer, tax year 2026.
-# Tier is "partial": income tax, CPP/CPP2 and EI are modelled; several credits are not.
+# Tier is "partial": income tax (brackets, basic personal amount, Canada employment amount,
+# CPP/EI credits, enhanced-CPP deduction), CPP/CPP2 and EI are modelled; other credits are not.
+# Computed as if this job were the person's only income for a full tax year.
 # Income-tax golden tests stay `pending` until official calculator runs are recorded.
 schema: 1
 id: CA-2026
 kind: country
 region: { country: CA }
 valid: { from: 2026-01-01, to: 2026-12-31 }
-revision: 1
+revision: 2
 tier: partial
 currency: CAD
 requires_engine: ">=1.0"
@@ -16,6 +18,7 @@ sources:
   cra_rates: { authority: official, title: "CRA: Canadian income tax rates for individuals", retrieved: 2026-11-10 }
   cra_cpp:   { authority: official, title: "CRA: CPP contribution rates, maximums and exemptions", retrieved: 2026-11-10 }
   cra_ei:    { authority: official, title: "CRA: EI premium rates and maximums", retrieved: 2026-11-10 }
+  cra_t4127: { authority: official, title: "CRA T4127 Payroll Deductions Formulas, 122nd edition (effective 2026-01-01), chapter 8 tables", url: "https://www.canada.ca/en/revenue-agency/services/forms-publications/payroll/t4127-payroll-deductions-formulas/t4127-jan.html", retrieved: 2026-11-11 }
 
 parameters:
   fed.brackets:
@@ -34,7 +37,10 @@ parameters:
     value: { max: 16452, min: 14829, from: 181440, to: 258482 }
   cpp:
     source: cra_cpp
-    value: { rate: 0.0595, exemption: 3500, ympe: 74600, yampe: 85000, rate2: 0.04 }
+    value: { rate: 0.0595, base_rate: 0.0495, enhanced_rate: 0.01, exemption: 3500, ympe: 74600, yampe: 85000, rate2: 0.04 }
+  fed.cea:
+    source: cra_t4127
+    value: 1501
   ei:
     source: cra_ei
     value: { rate: 0.0163, max_insurable: 68900 }
@@ -43,12 +49,8 @@ inputs:
   gross_annual: { type: money, label: "Annual gross employment income" }
 
 rules:
-  # Simplifications, listed under not_modelled below: taxable and net income are
-  # taken as gross income (no enhanced-CPP deduction, no other deductions).
   - { id: pensionable, expr: gross_annual }
   - { id: insurable, expr: gross_annual }
-  - { id: net_income, expr: gross_annual }
-  - { id: taxable_income, expr: net_income }
 
   - id: cpp.base
     label: { en: "CPP contributions" }
@@ -59,21 +61,35 @@ rules:
   - id: ei.premium
     label: { en: "EI premium" }
     expr: min(insurable, $ei.max_insurable) * $ei.rate
+
+  # CRA T4127: the enhanced part of CPP (1% of the 5.95%) and all of CPP2 are deducted from
+  # income; the base part (4.95%) and EI earn the lowest-rate credit.
+  - id: cpp.enhanced_deduction
+    label: { en: "Enhanced CPP deduction" }
+    expr: cpp.base * $cpp.enhanced_rate / $cpp.rate + cpp.second
+  - id: cpp.base_credit_amount
+    label: { en: "CPP base-portion credit amount" }
+    expr: cpp.base * $cpp.base_rate / $cpp.rate
+
+  - { id: net_income, expr: gross_annual - cpp.enhanced_deduction }
+  - { id: taxable_income, expr: net_income }
+
   - id: fed.bpa_amount
     label: { en: "Federal basic personal amount" }
     expr: phase_down(net_income, $fed.bpa)
+  - id: fed.credits
+    label: { en: "Federal non-refundable credits" }
+    note: "Credit rate x (basic personal amount + CPP base portion + EI + Canada employment amount)."
+    expr: $fed.credit_rate * (fed.bpa_amount + cpp.base_credit_amount + ei.premium + min(taxable_income, $fed.cea))
   - id: fed.tax
     label: { en: "Federal income tax" }
-    note: "Brackets less the basic personal amount credit only."
-    expr: max(0, bracket(taxable_income, $fed.brackets) - $fed.credit_rate * fed.bpa_amount)
+    expr: max(0, bracket(taxable_income, $fed.brackets) - fed.credits)
 
 outputs:
   income_tax:    [fed.tax]
   contributions: [cpp.base, cpp.second, ei.premium]
 
 not_modelled:
-  - canada_employment_amount
-  - cpp_enhanced_deduction_and_base_credit
-  - ei_credit
   - other_non_refundable_credits
+  - canada_workers_benefit_and_other_refundable_credits
   - quebec_abatement_and_qpp
