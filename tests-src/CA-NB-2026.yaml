@@ -51,28 +51,43 @@ cases:
     inputs: { wage: 0, as_of: 2026-04-01, gross_annual: 0 }
     expect: { nb.overtime_hourly: 23.85 }
 
-  # Arithmetic of the pack as written (brackets less the basic personal amount credit,
-  # no other credits). NOT official figures: useful for catching wiring mistakes at
-  # bracket edges until the official runs below are recorded.
-  - id: fed-bracket-wiring-at-first-edge
+  # Derived from tools/reference_ca_nb.py: an independent implementation of the CRA T4127
+  # formulas (brackets, basic personal amount, Canada employment amount, CPP base-portion and
+  # EI credits, enhanced-CPP deduction). Catches wiring mistakes; NOT official figures.
+  - id: ref-tax-20k
+    status: derived
+    inputs: { gross_annual: 20000, as_of: 2026-11-10 }
+    expect: { cpp.enhanced_deduction: 165.000, fed.bpa_amount: 16452.000, fed.tax: 103.495, nb.tax: 472.656 }
+
+  - id: ref-tax-41600-fulltime-20h
+    status: derived
+    inputs: { gross_annual: 41600, as_of: 2026-11-10 }
+    expect: { cpp.enhanced_deduction: 381.000, fed.bpa_amount: 16452.000, fed.tax: 2898.276, nb.tax: 2349.151 }
+
+  - id: ref-tax-50k
+    status: derived
+    inputs: { gross_annual: 50000, as_of: 2026-11-10 }
+    expect: { cpp.enhanced_deduction: 465.000, fed.bpa_amount: 16452.000, fed.tax: 3985.135, nb.tax: 3078.900 }
+
+  - id: ref-tax-first-fed-edge
     status: derived
     inputs: { gross_annual: 58523, as_of: 2026-11-10 }
-    expect: { fed.tax: 5889.94 }
+    expect: { cpp.enhanced_deduction: 550.230, fed.bpa_amount: 16452.000, fed.tax: 5087.909, nb.tax: 4078.763 }
 
-  - id: fed-bracket-wiring-80k
+  - id: ref-tax-80k
     status: derived
     inputs: { gross_annual: 80000, as_of: 2026-11-10 }
-    expect: { fed.tax: 10292.725 }
+    expect: { cpp.enhanced_deduction: 927.000, fed.bpa_amount: 16452.000, fed.tax: 9242.597, nb.tax: 6942.089 }
 
-  - id: nb-bracket-wiring-75k
+  - id: ref-tax-120k
     status: derived
-    inputs: { gross_annual: 75000, as_of: 2026-11-10 }
-    expect: { nb.tax: 6808.266 }
+    inputs: { gross_annual: 120000, as_of: 2026-11-10 }
+    expect: { cpp.enhanced_deduction: 1127.000, fed.bpa_amount: 16452.000, fed.tax: 17502.137, nb.tax: 12798.229 }
 
-  - id: bpa-phase-down-200k
+  - id: ref-tax-200k-bpa-phase-down
     status: derived
     inputs: { gross_annual: 200000, as_of: 2026-11-10 }
-    expect: { fed.bpa_amount: 16061.01 }
+    expect: { cpp.enhanced_deduction: 1127.000, fed.bpa_amount: 16084.749, fed.tax: 38876.542, nb.tax: 25773.649 }
 
   # To be filled from the CRA Payroll Deductions Online Calculator (NB, 2026, biweekly,
   # default TD1), one run per gross listed in docs/OFFICIAL_RUNS.md.

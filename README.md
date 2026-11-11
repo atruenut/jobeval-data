@@ -11,6 +11,7 @@ downloads only the packs a user selects and caches them for offline use.
 | `tests-src/` | Golden-test suites (YAML) checking packs against official calculators or derived arithmetic |
 | `tools/build.py` | Compiles YAML to canonical JSON and builds the signed catalog input |
 | `docs/PACK_SPEC.md` | The pack format and rule language |
+| `CONTRIBUTING.md` | How to add or change packs |
 | `docs/OFFICIAL_RUNS.md` | Official calculator runs still needed to promote `derived` tests |
 | `.engine-ref` | Engine version (a ref of jobeval-app) that CI validates against |
 
