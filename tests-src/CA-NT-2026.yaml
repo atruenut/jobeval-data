@@ -1,0 +1,36 @@
+# Golden tests for CA-NT-2026.
+# status derived: values from tools/reference_ca_provinces.py, an independent implementation of the
+# CRA T4127 formulas (V x A - KP form). Not an official run; tax lines against an official
+# calculator are still wanted (see docs/OFFICIAL_RUNS.md).
+suite: CA-NT-2026
+pack: CA-NT-2026
+tolerance: { abs: 0.01 }
+cases:
+  - id: nt-tax-12000
+    status: derived
+    inputs: { gross_annual: 12000, as_of: 2026-11-12 }
+    expect: { nt.tax: 0.000 }
+  - id: nt-tax-25000
+    status: derived
+    inputs: { gross_annual: 25000, as_of: 2026-11-12 }
+    expect: { nt.tax: 301.800 }
+  - id: nt-tax-45000
+    status: derived
+    inputs: { gross_annual: 45000, as_of: 2026-11-12 }
+    expect: { nt.tax: 1392.356 }
+  - id: nt-tax-70000
+    status: derived
+    inputs: { gross_annual: 70000, as_of: 2026-11-12 }
+    expect: { nt.tax: 3197.573 }
+  - id: nt-tax-110000
+    status: derived
+    inputs: { gross_annual: 110000, as_of: 2026-11-12 }
+    expect: { nt.tax: 6687.510 }
+  - id: nt-tax-180000
+    status: derived
+    inputs: { gross_annual: 180000, as_of: 2026-11-12 }
+    expect: { nt.tax: 15348.260 }
+  - id: nt-overtime-statutory
+    status: derived
+    inputs: { wage: 20.00, gross_annual: 40000, as_of: 2026-11-12 }
+    expect: { nt.overtime_hourly: 30.00, nt.overtime_threshold_hours: 40 }

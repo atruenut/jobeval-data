@@ -1,0 +1,37 @@
+# Yukon, provincial layer, tax year 2026. Extends CA-2026.
+schema: 1
+id: CA-YT-2026
+kind: subregion
+extends: CA-2026
+region: { country: CA, subregion: YT }
+valid: { from: 2026-01-01, to: 2026-12-31 }
+revision: 1
+tier: partial
+requires_engine: ">=1.0"
+labels: { en: "Yukon (2026)", fr: "Yukon (2026)" }
+
+parameters:
+  yt.brackets:
+    source: cra_t4127
+    value:
+      - { up_to: 58523, rate: 0.064 }
+      - { up_to: 117045, rate: 0.09 }
+      - { up_to: 181440, rate: 0.109 }
+      - { up_to: 500000, rate: 0.128 }
+      - { rate: 0.15 }
+  yt.credit_rate:
+    source: cra_t4127
+    value: 0.064
+
+rules:
+  - id: yt.tax
+    label: { en: "Yukon income tax" }
+    note: "Brackets less the lowest-rate credit on the basic personal amount, CPP base portion and EI."
+    expr: max(0, bracket(taxable_income, $yt.brackets) - $yt.credit_rate * (fed.bpa_amount + cpp.base_credit_amount + ei.premium))
+
+append:
+  income_tax: [yt.tax]
+
+not_modelled:
+  - yt_other_credits
+  - yt_overtime_rules_not_verified

@@ -1,0 +1,64 @@
+# Manitoba, provincial layer, tax year 2026. Extends CA-2026.
+schema: 1
+id: CA-MB-2026
+kind: subregion
+extends: CA-2026
+region: { country: CA, subregion: MB }
+valid: { from: 2026-01-01, to: 2026-12-31 }
+revision: 1
+tier: partial
+requires_engine: ">=1.0"
+labels: { en: "Manitoba (2026)", fr: "Manitoba (2026)" }
+
+sources:
+  mb_overtime: { authority: official, title: "Government of Manitoba: overtime factsheet", url: "https://www.gov.mb.ca/labour/standards/doc,overtime,factsheet.html", retrieved: 2026-11-12 }
+
+parameters:
+  mb.brackets:
+    source: cra_t4127
+    value:
+      - { up_to: 47000, rate: 0.108 }
+      - { up_to: 100000, rate: 0.1275 }
+      - { rate: 0.174 }
+  mb.credit_rate:
+    source: cra_t4127
+    value: 0.108
+  mb.bpa:
+    source: cra_t4127
+    value: { amount: 15780, start: 200000, rate: 0.0789 }
+  mb.overtime_after_hours:
+    source: mb_overtime
+    value: 40
+
+inputs:
+  wage: { type: money, label: "Hourly wage", default: 0 }
+
+rules:
+  - id: mb.bpa_amount
+    label: { en: "Manitoba basic personal amount" }
+    note: "Reduced for incomes above 200,000 (CRA T4127 uses net income; taxable income is used here)."
+    expr: phase_out($mb.bpa.amount, taxable_income, $mb.bpa.start, $mb.bpa.rate)
+  - id: mb.tax
+    label: { en: "Manitoba income tax" }
+    note: "Brackets less the lowest-rate credit on the basic personal amount, CPP base portion and EI."
+    expr: max(0, bracket(taxable_income, $mb.brackets) - $mb.credit_rate * (mb.bpa_amount + cpp.base_credit_amount + ei.premium))
+  - id: mb.overtime_hourly
+    public: true
+    label: { en: "Statutory minimum overtime rate" }
+    note: "Time and a half. Daily overtime thresholds and special industries are not modelled."
+    expr: 1.5 * wage
+  - id: mb.overtime_threshold_hours
+    public: true
+    label: { en: "Overtime starts after (hours per week)" }
+    expr: $mb.overtime_after_hours
+
+append:
+  income_tax: [mb.tax]
+
+outputs:
+  overtime_rate: [mb.overtime_hourly]
+  overtime_threshold_hours: [mb.overtime_threshold_hours]
+
+not_modelled:
+  - mb_other_credits
+  - mb_daily_overtime_and_double_time

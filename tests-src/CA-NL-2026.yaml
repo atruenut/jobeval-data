@@ -1,0 +1,32 @@
+# Golden tests for CA-NL-2026.
+# status derived: values from tools/reference_ca_provinces.py, an independent implementation of the
+# CRA T4127 formulas (V x A - KP form). Not an official run; tax lines against an official
+# calculator are still wanted (see docs/OFFICIAL_RUNS.md).
+suite: CA-NL-2026
+pack: CA-NL-2026
+tolerance: { abs: 0.01 }
+cases:
+  - id: nl-tax-12000
+    status: derived
+    inputs: { gross_annual: 12000, as_of: 2026-11-12 }
+    expect: { nl.tax: 9.627 }
+  - id: nl-tax-25000
+    status: derived
+    inputs: { gross_annual: 25000, as_of: 2026-11-12 }
+    expect: { nl.tax: 1054.897 }
+  - id: nl-tax-45000
+    status: derived
+    inputs: { gross_annual: 45000, as_of: 2026-11-12 }
+    expect: { nl.tax: 2663.005 }
+  - id: nl-tax-70000
+    status: derived
+    inputs: { gross_annual: 70000, as_of: 2026-11-12 }
+    expect: { nl.tax: 6104.806 }
+  - id: nl-tax-110000
+    status: derived
+    inputs: { gross_annual: 110000, as_of: 2026-11-12 }
+    expect: { nl.tax: 12071.753 }
+  - id: nl-tax-180000
+    status: derived
+    inputs: { gross_annual: 180000, as_of: 2026-11-12 }
+    expect: { nl.tax: 23518.653 }

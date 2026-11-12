@@ -1,0 +1,43 @@
+# Newfoundland and Labrador, provincial layer, tax year 2026. Extends CA-2026.
+schema: 1
+id: CA-NL-2026
+kind: subregion
+extends: CA-2026
+region: { country: CA, subregion: NL }
+valid: { from: 2026-01-01, to: 2026-12-31 }
+revision: 1
+tier: partial
+requires_engine: ">=1.0"
+labels: { en: "Newfoundland and Labrador (2026)", fr: "Terre-Neuve-et-Labrador (2026)" }
+
+parameters:
+  nl.brackets:
+    source: cra_t4127
+    value:
+      - { up_to: 44678, rate: 0.087 }
+      - { up_to: 89354, rate: 0.145 }
+      - { up_to: 159528, rate: 0.158 }
+      - { up_to: 223340, rate: 0.178 }
+      - { up_to: 285319, rate: 0.198 }
+      - { up_to: 570638, rate: 0.208 }
+      - { up_to: 1141275, rate: 0.213 }
+      - { rate: 0.218 }
+  nl.credit_rate:
+    source: cra_t4127
+    value: 0.087
+  nl.bpa:
+    source: cra_t4127
+    value: 11188
+
+rules:
+  - id: nl.tax
+    label: { en: "Newfoundland and Labrador income tax" }
+    note: "Brackets less the lowest-rate credit on the basic personal amount, CPP base portion and EI."
+    expr: max(0, bracket(taxable_income, $nl.brackets) - $nl.credit_rate * ($nl.bpa + cpp.base_credit_amount + ei.premium))
+
+append:
+  income_tax: [nl.tax]
+
+not_modelled:
+  - nl_other_credits
+  - nl_overtime_rules_not_verified

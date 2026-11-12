@@ -44,7 +44,7 @@ def calc(gross, other=0):
     fed = max(D(0), bracket_tax(a, FED) - D("0.14") * (bpa + base_credit + ei + min(g, CEA)))
     nb = max(D(0), bracket_tax(a, NB) - D("0.094") * (NB_BPA + base_credit + ei))
     ei_weekly = lambda prior: min(D("0.55") * min(D(prior), EI_MAX) / 52, D(729))
-    return dict(cpp_base=c, cpp_second=c2, ei=ei, enhanced=enhanced, taxable=a, bpa=bpa, fed=fed, nb=nb)
+    return dict(cpp_base_credit=base_credit, cpp_base=c, cpp_second=c2, ei=ei, enhanced=enhanced, taxable=a, bpa=bpa, fed=fed, nb=nb)
 
 
 if __name__ == "__main__":
