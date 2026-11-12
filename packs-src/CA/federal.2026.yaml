@@ -8,7 +8,7 @@ id: CA-2026
 kind: country
 region: { country: CA }
 valid: { from: 2026-01-01, to: 2026-12-31 }
-revision: 2
+revision: 3
 tier: partial
 currency: CAD
 requires_engine: ">=1.0"
@@ -18,6 +18,7 @@ sources:
   cra_rates: { authority: official, title: "CRA: Canadian income tax rates for individuals", retrieved: 2026-11-10 }
   cra_cpp:   { authority: official, title: "CRA: CPP contribution rates, maximums and exemptions", retrieved: 2026-11-10 }
   cra_ei:    { authority: official, title: "CRA: EI premium rates and maximums", retrieved: 2026-11-10 }
+  esdc_ei_benefit: { authority: official, title: "Service Canada: EI regular benefits, how much you could receive", url: "https://www.canada.ca/en/services/benefits/ei/ei-regular-benefit/benefit-amount.html", retrieved: 2026-11-11 }
   cra_t4127: { authority: official, title: "CRA T4127 Payroll Deductions Formulas, 122nd edition (effective 2026-01-01), chapter 8 tables", url: "https://www.canada.ca/en/revenue-agency/services/forms-publications/payroll/t4127-payroll-deductions-formulas/t4127-jan.html", retrieved: 2026-11-11 }
 
 parameters:
@@ -41,12 +42,22 @@ parameters:
   fed.cea:
     source: cra_t4127
     value: 1501
+  ei.benefit_rate:
+    source: esdc_ei_benefit
+    value: 0.55
+  ei.max_weekly_benefit:
+    source: esdc_ei_benefit
+    value: 729
   ei:
     source: cra_ei
     value: { rate: 0.0163, max_insurable: 68900 }
 
 inputs:
   gross_annual: { type: money, label: "Annual gross employment income" }
+  # Taxable income that is not employment pay (EI and other benefits, part-time work reported
+  # separately...). Taxed, but earns no CPP/EI contributions and no employment amount.
+  other_income: { type: money, default: 0, label: "Other taxable income" }
+  prior_earnings_annual: { type: money, default: 0, label: "Earnings before the claim, per year" }
 
 rules:
   - { id: pensionable, expr: gross_annual }
@@ -71,16 +82,21 @@ rules:
     label: { en: "CPP base-portion credit amount" }
     expr: cpp.base * $cpp.base_rate / $cpp.rate
 
-  - { id: net_income, expr: gross_annual - cpp.enhanced_deduction }
+  - { id: net_income, expr: gross_annual + other_income - cpp.enhanced_deduction }
   - { id: taxable_income, expr: net_income }
 
   - id: fed.bpa_amount
     label: { en: "Federal basic personal amount" }
     expr: phase_down(net_income, $fed.bpa)
+  - id: ei.weekly_benefit
+    label: { en: "EI regular weekly benefit" }
+    note: "55% of average weekly insurable earnings, capped. Approximates the best-weeks average by prior annual earnings / 52."
+    expr: min($ei.benefit_rate * min(prior_earnings_annual, $ei.max_insurable) / 52, $ei.max_weekly_benefit)
+
   - id: fed.credits
     label: { en: "Federal non-refundable credits" }
     note: "Credit rate x (basic personal amount + CPP base portion + EI + Canada employment amount)."
-    expr: $fed.credit_rate * (fed.bpa_amount + cpp.base_credit_amount + ei.premium + min(taxable_income, $fed.cea))
+    expr: $fed.credit_rate * (fed.bpa_amount + cpp.base_credit_amount + ei.premium + min(gross_annual, $fed.cea))
   - id: fed.tax
     label: { en: "Federal income tax" }
     expr: max(0, bracket(taxable_income, $fed.brackets) - fed.credits)
@@ -88,8 +104,10 @@ rules:
 outputs:
   income_tax:    [fed.tax]
   contributions: [cpp.base, cpp.second, ei.premium]
+  unemployment_weekly_benefit: [ei.weekly_benefit]
 
 not_modelled:
+  - ei_benefit_duration_waiting_week_and_best_weeks_averaging
   - other_non_refundable_credits
   - canada_workers_benefit_and_other_refundable_credits
   - quebec_abatement_and_qpp

@@ -30,18 +30,20 @@ def bracket_tax(x, table):
     return tax
 
 
-def calc(gross):
+def calc(gross, other=0):
     g = D(gross)
+    o = D(other)
     c = max(D(0), min(g, YMPE) - EXEMPT) * CPP_RATE
     c2 = max(D(0), min(g, YAMPE) - YMPE) * CPP2
     ei = min(g, EI_MAX) * EI_RATE
     enhanced = c * CPP_ENH / CPP_RATE + c2
     base_credit = c * CPP_BASE / CPP_RATE
-    a = g - enhanced
+    a = g + o - enhanced
     bpa = FED_BPA_MAX if a <= PHASE_LO else FED_BPA_MIN if a >= PHASE_HI else \
         FED_BPA_MAX - (FED_BPA_MAX - FED_BPA_MIN) * (a - PHASE_LO) / (PHASE_HI - PHASE_LO)
-    fed = max(D(0), bracket_tax(a, FED) - D("0.14") * (bpa + base_credit + ei + min(a, CEA)))
+    fed = max(D(0), bracket_tax(a, FED) - D("0.14") * (bpa + base_credit + ei + min(g, CEA)))
     nb = max(D(0), bracket_tax(a, NB) - D("0.094") * (NB_BPA + base_credit + ei))
+    ei_weekly = lambda prior: min(D("0.55") * min(D(prior), EI_MAX) / 52, D(729))
     return dict(cpp_base=c, cpp_second=c2, ei=ei, enhanced=enhanced, taxable=a, bpa=bpa, fed=fed, nb=nb)
 
 

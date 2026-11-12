@@ -5,7 +5,7 @@ kind: subregion
 extends: CA-2026
 region: { country: CA, subregion: NB }
 valid: { from: 2026-01-01, to: 2026-12-31 }
-revision: 2
+revision: 3
 tier: partial
 requires_engine: ">=1.0"
 labels: { en: "New Brunswick (2026)", fr: "Nouveau-Brunswick (2026)" }
