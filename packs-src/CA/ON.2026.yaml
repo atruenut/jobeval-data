@@ -1,0 +1,88 @@
+# Ontario, provincial layer, tax year 2026. Extends CA-2026.
+schema: 1
+id: CA-ON-2026
+kind: subregion
+extends: CA-2026
+region: { country: CA, subregion: ON }
+valid: { from: 2026-01-01, to: 2026-12-31 }
+revision: 1
+tier: partial
+requires_engine: ">=1.0"
+labels: { en: "Ontario (2026)", fr: "Ontario (2026)" }
+
+sources:
+  on_overtime: { authority: official, title: "Government of Ontario: your guide to the Employment Standards Act, overtime pay", url: "https://www.ontario.ca/document/your-guide-employment-standards-act-0/overtime-pay", retrieved: 2026-11-12 }
+  cra_t4032on: { authority: official, title: "CRA T4032ON payroll deductions tables, January 2026: Ontario surtax, health premium and tax reduction", url: "https://www.canada.ca/en/revenue-agency/services/forms-publications/payroll/t4032-payroll-deductions-tables/t4032on-jan/t4032on-january-general-information.html", retrieved: 2026-11-12 }
+
+parameters:
+  on.brackets:
+    source: cra_t4127
+    value:
+      - { up_to: 53891, rate: 0.0505 }
+      - { up_to: 107785, rate: 0.0915 }
+      - { up_to: 150000, rate: 0.1116 }
+      - { up_to: 220000, rate: 0.1216 }
+      - { rate: 0.1316 }
+  on.credit_rate:
+    source: cra_t4127
+    value: 0.0505
+  on.bpa:
+    source: cra_t4127
+    value: 12989
+  on.surtax:
+    source: cra_t4032on
+    value: { first: 5818, second: 7446, rate1: 0.2, rate2: 0.36 }
+  on.reduction_base:
+    source: cra_t4032on
+    value: 300
+  on.overtime_after_hours:
+    source: on_overtime
+    value: 44
+
+inputs:
+  wage: { type: money, label: "Hourly wage", default: 0 }
+
+rules:
+  - id: on.tax_basic
+    expr: max(0, bracket(taxable_income, $on.brackets) - $on.credit_rate * ($on.bpa + cpp.base_credit_amount + ei.premium))
+  - id: on.reduction
+    label: { en: "Ontario tax reduction" }
+    note: "Twice the personal amount less the tax, never more than the tax."
+    expr: max(0, min(on.tax_basic, 2 * $on.reduction_base - on.tax_basic))
+  - id: on.tax
+    label: { en: "Ontario income tax" }
+    expr: on.tax_basic - on.reduction
+  - id: on.surtax
+    label: { en: "Ontario surtax" }
+    note: "20% of tax above 5,818 plus 36% of tax above 7,446."
+    expr: $on.surtax.rate1 * max(0, on.tax - $on.surtax.first) + $on.surtax.rate2 * max(0, on.tax - $on.surtax.second)
+  - id: on.health_premium
+    label: { en: "Ontario Health Premium" }
+    note: "Bands on taxable income, each the lesser of a cap and a rate on the excess."
+    expr: >
+      if(taxable_income <= 20000, 0,
+      if(taxable_income <= 36000, min(300, 0.06 * (taxable_income - 20000)),
+      if(taxable_income <= 48000, min(450, 300 + 0.06 * (taxable_income - 36000)),
+      if(taxable_income <= 72000, min(600, 450 + 0.25 * (taxable_income - 48000)),
+      if(taxable_income <= 200000, min(750, 600 + 0.25 * (taxable_income - 72000)),
+      min(900, 750 + 0.25 * (taxable_income - 200000)))))))
+  - id: on.overtime_hourly
+    public: true
+    label: { en: "Statutory minimum overtime rate" }
+    note: "Time and a half. Daily overtime thresholds and special industries are not modelled."
+    expr: 1.5 * wage
+  - id: on.overtime_threshold_hours
+    public: true
+    label: { en: "Overtime starts after (hours per week)" }
+    expr: $on.overtime_after_hours
+
+append:
+  income_tax: [on.tax, on.surtax, on.health_premium]
+
+outputs:
+  overtime_rate: [on.overtime_hourly]
+  overtime_threshold_hours: [on.overtime_threshold_hours]
+
+not_modelled:
+  - on_other_credits
+  - on_dependant_tax_reduction

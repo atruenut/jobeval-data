@@ -1,0 +1,32 @@
+# Golden tests for CA-YT-2026.
+# status derived: values from tools/reference_ca_provinces.py, an independent implementation of the
+# CRA T4127 formulas (V x A - KP form). Not an official run; tax lines against an official
+# calculator are still wanted (see docs/OFFICIAL_RUNS.md).
+suite: CA-YT-2026
+pack: CA-YT-2026
+tolerance: { abs: 0.01 }
+cases:
+  - id: yt-tax-12000
+    status: derived
+    inputs: { gross_annual: 12000, as_of: 2026-11-12 }
+    expect: { yt.tax: 0.000 }
+  - id: yt-tax-25000
+    status: derived
+    inputs: { gross_annual: 25000, as_of: 2026-11-12 }
+    expect: { yt.tax: 439.120 }
+  - id: yt-tax-45000
+    status: derived
+    inputs: { gross_annual: 45000, as_of: 2026-11-12 }
+    expect: { yt.tax: 1622.096 }
+  - id: yt-tax-70000
+    status: derived
+    inputs: { gross_annual: 70000, as_of: 2026-11-12 }
+    expect: { yt.tax: 3383.076 }
+  - id: yt-tax-110000
+    status: derived
+    inputs: { gross_annual: 110000, as_of: 2026-11-12 }
+    expect: { yt.tax: 6926.923 }
+  - id: yt-tax-180000
+    status: derived
+    inputs: { gross_annual: 180000, as_of: 2026-11-12 }
+    expect: { yt.tax: 14401.655 }

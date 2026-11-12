@@ -1,0 +1,61 @@
+# Northwest Territories, provincial layer, tax year 2026. Extends CA-2026.
+schema: 1
+id: CA-NT-2026
+kind: subregion
+extends: CA-2026
+region: { country: CA, subregion: NT }
+valid: { from: 2026-01-01, to: 2026-12-31 }
+revision: 1
+tier: partial
+requires_engine: ">=1.0"
+labels: { en: "Northwest Territories (2026)", fr: "Territoires du Nord-Ouest (2026)" }
+
+sources:
+  nt_overtime: { authority: official, title: "Government of the Northwest Territories: employment standards FAQ", url: "https://www.ece.gov.nt.ca/en/services/employment-standards/frequently-asked-questions", retrieved: 2026-11-12 }
+
+parameters:
+  nt.brackets:
+    source: cra_t4127
+    value:
+      - { up_to: 53003, rate: 0.059 }
+      - { up_to: 106009, rate: 0.086 }
+      - { up_to: 172346, rate: 0.122 }
+      - { rate: 0.1405 }
+  nt.credit_rate:
+    source: cra_t4127
+    value: 0.059
+  nt.bpa:
+    source: cra_t4127
+    value: 18198
+  nt.overtime_after_hours:
+    source: nt_overtime
+    value: 40
+
+inputs:
+  wage: { type: money, label: "Hourly wage", default: 0 }
+
+rules:
+  - id: nt.tax
+    label: { en: "Northwest Territories income tax" }
+    note: "Brackets less the lowest-rate credit on the basic personal amount, CPP base portion and EI."
+    expr: max(0, bracket(taxable_income, $nt.brackets) - $nt.credit_rate * ($nt.bpa + cpp.base_credit_amount + ei.premium))
+  - id: nt.overtime_hourly
+    public: true
+    label: { en: "Statutory minimum overtime rate" }
+    note: "Time and a half. Daily overtime thresholds and special industries are not modelled."
+    expr: 1.5 * wage
+  - id: nt.overtime_threshold_hours
+    public: true
+    label: { en: "Overtime starts after (hours per week)" }
+    expr: $nt.overtime_after_hours
+
+append:
+  income_tax: [nt.tax]
+
+outputs:
+  overtime_rate: [nt.overtime_hourly]
+  overtime_threshold_hours: [nt.overtime_threshold_hours]
+
+not_modelled:
+  - nt_other_credits
+  - nt_daily_overtime_and_double_time

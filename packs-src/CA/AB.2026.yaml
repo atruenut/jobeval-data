@@ -1,0 +1,63 @@
+# Alberta, provincial layer, tax year 2026. Extends CA-2026.
+schema: 1
+id: CA-AB-2026
+kind: subregion
+extends: CA-2026
+region: { country: CA, subregion: AB }
+valid: { from: 2026-01-01, to: 2026-12-31 }
+revision: 1
+tier: partial
+requires_engine: ">=1.0"
+labels: { en: "Alberta (2026)", fr: "Alberta (2026)" }
+
+sources:
+  ab_overtime: { authority: official, title: "Government of Alberta: overtime hours and overtime pay", url: "https://www.alberta.ca/overtime-hours-overtime-pay", retrieved: 2026-11-12 }
+
+parameters:
+  ab.brackets:
+    source: cra_t4127
+    value:
+      - { up_to: 61200, rate: 0.08 }
+      - { up_to: 154259, rate: 0.1 }
+      - { up_to: 185111, rate: 0.12 }
+      - { up_to: 246813, rate: 0.13 }
+      - { up_to: 370220, rate: 0.14 }
+      - { rate: 0.15 }
+  ab.credit_rate:
+    source: cra_t4127
+    value: 0.08
+  ab.bpa:
+    source: cra_t4127
+    value: 22769
+  ab.overtime_after_hours:
+    source: ab_overtime
+    value: 44
+
+inputs:
+  wage: { type: money, label: "Hourly wage", default: 0 }
+
+rules:
+  - id: ab.tax
+    label: { en: "Alberta income tax" }
+    note: "Brackets less the lowest-rate credit on the basic personal amount, CPP base portion and EI."
+    expr: max(0, bracket(taxable_income, $ab.brackets) - $ab.credit_rate * ($ab.bpa + cpp.base_credit_amount + ei.premium))
+  - id: ab.overtime_hourly
+    public: true
+    label: { en: "Statutory minimum overtime rate" }
+    note: "Time and a half. Daily overtime thresholds and special industries are not modelled."
+    expr: 1.5 * wage
+  - id: ab.overtime_threshold_hours
+    public: true
+    label: { en: "Overtime starts after (hours per week)" }
+    expr: $ab.overtime_after_hours
+
+append:
+  income_tax: [ab.tax]
+
+outputs:
+  overtime_rate: [ab.overtime_hourly]
+  overtime_threshold_hours: [ab.overtime_threshold_hours]
+
+not_modelled:
+  - ab_other_credits
+  - ab_daily_overtime_and_double_time

@@ -1,0 +1,61 @@
+# Nova Scotia, provincial layer, tax year 2026. Extends CA-2026.
+schema: 1
+id: CA-NS-2026
+kind: subregion
+extends: CA-2026
+region: { country: CA, subregion: NS }
+valid: { from: 2026-01-01, to: 2026-12-31 }
+revision: 1
+tier: partial
+requires_engine: ">=1.0"
+labels: { en: "Nova Scotia (2026)", fr: "Nouvelle-Écosse (2026)" }
+
+sources:
+  ns_overtime: { authority: official, title: "Government of Nova Scotia: overtime pay", url: "https://novascotia.ca/lae/employmentrights/overtime.asp", retrieved: 2026-11-12 }
+
+parameters:
+  ns.brackets:
+    source: cra_t4127
+    value:
+      - { up_to: 30995, rate: 0.0879 }
+      - { up_to: 61991, rate: 0.1495 }
+      - { up_to: 97417, rate: 0.1667 }
+      - { up_to: 157124, rate: 0.175 }
+      - { rate: 0.21 }
+  ns.credit_rate:
+    source: cra_t4127
+    value: 0.0879
+  ns.bpa:
+    source: cra_t4127
+    value: 11932
+  ns.overtime_after_hours:
+    source: ns_overtime
+    value: 48
+
+inputs:
+  wage: { type: money, label: "Hourly wage", default: 0 }
+
+rules:
+  - id: ns.tax
+    label: { en: "Nova Scotia income tax" }
+    note: "Brackets less the lowest-rate credit on the basic personal amount, CPP base portion and EI."
+    expr: max(0, bracket(taxable_income, $ns.brackets) - $ns.credit_rate * ($ns.bpa + cpp.base_credit_amount + ei.premium))
+  - id: ns.overtime_hourly
+    public: true
+    label: { en: "Statutory minimum overtime rate" }
+    note: "Time and a half. Daily overtime thresholds and special industries are not modelled."
+    expr: 1.5 * wage
+  - id: ns.overtime_threshold_hours
+    public: true
+    label: { en: "Overtime starts after (hours per week)" }
+    expr: $ns.overtime_after_hours
+
+append:
+  income_tax: [ns.tax]
+
+outputs:
+  overtime_rate: [ns.overtime_hourly]
+  overtime_threshold_hours: [ns.overtime_threshold_hours]
+
+not_modelled:
+  - ns_other_credits

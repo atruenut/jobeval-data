@@ -1,0 +1,60 @@
+# Saskatchewan, provincial layer, tax year 2026. Extends CA-2026.
+schema: 1
+id: CA-SK-2026
+kind: subregion
+extends: CA-2026
+region: { country: CA, subregion: SK }
+valid: { from: 2026-01-01, to: 2026-12-31 }
+revision: 1
+tier: partial
+requires_engine: ">=1.0"
+labels: { en: "Saskatchewan (2026)", fr: "Saskatchewan (2026)" }
+
+sources:
+  sk_overtime: { authority: official, title: "Government of Saskatchewan: overtime for part-time employees, and calculating overtime for employees paid by the week", url: "https://www.saskatchewan.ca/business/employment-standards/overtime/general-overtime-information/overtime-for-part-time-employees", retrieved: 2026-11-12 }
+
+parameters:
+  sk.brackets:
+    source: cra_t4127
+    value:
+      - { up_to: 54532, rate: 0.105 }
+      - { up_to: 155805, rate: 0.125 }
+      - { rate: 0.145 }
+  sk.credit_rate:
+    source: cra_t4127
+    value: 0.105
+  sk.bpa:
+    source: cra_t4127
+    value: 20381
+  sk.overtime_after_hours:
+    source: sk_overtime
+    value: 40
+
+inputs:
+  wage: { type: money, label: "Hourly wage", default: 0 }
+
+rules:
+  - id: sk.tax
+    label: { en: "Saskatchewan income tax" }
+    note: "Brackets less the lowest-rate credit on the basic personal amount, CPP base portion and EI."
+    expr: max(0, bracket(taxable_income, $sk.brackets) - $sk.credit_rate * ($sk.bpa + cpp.base_credit_amount + ei.premium))
+  - id: sk.overtime_hourly
+    public: true
+    label: { en: "Statutory minimum overtime rate" }
+    note: "Time and a half. Daily overtime thresholds and special industries are not modelled."
+    expr: 1.5 * wage
+  - id: sk.overtime_threshold_hours
+    public: true
+    label: { en: "Overtime starts after (hours per week)" }
+    expr: $sk.overtime_after_hours
+
+append:
+  income_tax: [sk.tax]
+
+outputs:
+  overtime_rate: [sk.overtime_hourly]
+  overtime_threshold_hours: [sk.overtime_threshold_hours]
+
+not_modelled:
+  - sk_other_credits
+  - sk_daily_overtime_and_double_time

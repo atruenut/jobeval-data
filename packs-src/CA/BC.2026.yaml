@@ -1,0 +1,67 @@
+# British Columbia, provincial layer, tax year 2026. Extends CA-2026.
+schema: 1
+id: CA-BC-2026
+kind: subregion
+extends: CA-2026
+region: { country: CA, subregion: BC }
+valid: { from: 2026-01-01, to: 2026-12-31 }
+revision: 1
+tier: partial
+requires_engine: ">=1.0"
+labels: { en: "British Columbia (2026)", fr: "Colombie-Britannique (2026)" }
+
+sources:
+  bc_overtime: { authority: official, title: "Government of British Columbia: overtime pay", url: "https://www2.gov.bc.ca/gov/content/employment-business/employment-standards-advice/employment-standards/hours/overtime-pay", retrieved: 2026-11-12 }
+
+parameters:
+  bc.brackets:
+    source: cra_t4127
+    value:
+      - { up_to: 50363, rate: 0.0506 }
+      - { up_to: 100728, rate: 0.077 }
+      - { up_to: 115648, rate: 0.105 }
+      - { up_to: 140430, rate: 0.1229 }
+      - { up_to: 190405, rate: 0.147 }
+      - { up_to: 265545, rate: 0.168 }
+      - { rate: 0.205 }
+  bc.credit_rate:
+    source: cra_t4127
+    value: 0.0506
+  bc.bpa:
+    source: cra_t4127
+    value: 13216
+  bc.reduction:
+    source: cra_t4127
+    value: { amount: 575, start: 25570, rate: 0.0356 }
+  bc.overtime_after_hours:
+    source: bc_overtime
+    value: 40
+
+inputs:
+  wage: { type: money, label: "Hourly wage", default: 0 }
+
+rules:
+  - id: bc.tax
+    label: { en: "British Columbia income tax" }
+    note: "Brackets less the lowest-rate credit on the basic personal amount, CPP base portion and EI. Less the BC tax reduction, which fades out between 25,570 and 41,722."
+    expr: max(0, bracket(taxable_income, $bc.brackets) - $bc.credit_rate * ($bc.bpa + cpp.base_credit_amount + ei.premium) - phase_out($bc.reduction.amount, taxable_income, $bc.reduction.start, $bc.reduction.rate))
+  - id: bc.overtime_hourly
+    public: true
+    label: { en: "Statutory minimum overtime rate" }
+    note: "Time and a half. Daily overtime thresholds and special industries are not modelled."
+    expr: 1.5 * wage
+  - id: bc.overtime_threshold_hours
+    public: true
+    label: { en: "Overtime starts after (hours per week)" }
+    expr: $bc.overtime_after_hours
+
+append:
+  income_tax: [bc.tax]
+
+outputs:
+  overtime_rate: [bc.overtime_hourly]
+  overtime_threshold_hours: [bc.overtime_threshold_hours]
+
+not_modelled:
+  - bc_other_credits
+  - bc_daily_overtime_and_double_time

@@ -1,0 +1,61 @@
+# Nunavut, provincial layer, tax year 2026. Extends CA-2026.
+schema: 1
+id: CA-NU-2026
+kind: subregion
+extends: CA-2026
+region: { country: CA, subregion: NU }
+valid: { from: 2026-01-01, to: 2026-12-31 }
+revision: 1
+tier: partial
+requires_engine: ">=1.0"
+labels: { en: "Nunavut (2026)", fr: "Nunavut (2026)" }
+
+sources:
+  nu_overtime: { authority: official, title: "Government of Nunavut: labour and employment standards", url: "https://www.gov.nu.ca/en/employment-training-and-career-development/labour-and-employment-standards-nunavut", retrieved: 2026-11-12 }
+
+parameters:
+  nu.brackets:
+    source: cra_t4127
+    value:
+      - { up_to: 55801, rate: 0.04 }
+      - { up_to: 111602, rate: 0.07 }
+      - { up_to: 181439, rate: 0.09 }
+      - { rate: 0.115 }
+  nu.credit_rate:
+    source: cra_t4127
+    value: 0.04
+  nu.bpa:
+    source: cra_t4127
+    value: 19659
+  nu.overtime_after_hours:
+    source: nu_overtime
+    value: 40
+
+inputs:
+  wage: { type: money, label: "Hourly wage", default: 0 }
+
+rules:
+  - id: nu.tax
+    label: { en: "Nunavut income tax" }
+    note: "Brackets less the lowest-rate credit on the basic personal amount, CPP base portion and EI."
+    expr: max(0, bracket(taxable_income, $nu.brackets) - $nu.credit_rate * ($nu.bpa + cpp.base_credit_amount + ei.premium))
+  - id: nu.overtime_hourly
+    public: true
+    label: { en: "Statutory minimum overtime rate" }
+    note: "Time and a half. Daily overtime thresholds and special industries are not modelled."
+    expr: 1.5 * wage
+  - id: nu.overtime_threshold_hours
+    public: true
+    label: { en: "Overtime starts after (hours per week)" }
+    expr: $nu.overtime_after_hours
+
+append:
+  income_tax: [nu.tax]
+
+outputs:
+  overtime_rate: [nu.overtime_hourly]
+  overtime_threshold_hours: [nu.overtime_threshold_hours]
+
+not_modelled:
+  - nu_other_credits
+  - nu_daily_overtime_and_double_time

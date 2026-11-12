@@ -1,0 +1,36 @@
+# Golden tests for CA-ON-2026.
+# status derived: values from tools/reference_ca_provinces.py, an independent implementation of the
+# CRA T4127 formulas (V x A - KP form). Not an official run; tax lines against an official
+# calculator are still wanted (see docs/OFFICIAL_RUNS.md).
+suite: CA-ON-2026
+pack: CA-ON-2026
+tolerance: { abs: 0.01 }
+cases:
+  - id: on-tax-12000
+    status: derived
+    inputs: { gross_annual: 12000, as_of: 2026-11-12 }
+    expect: { on.tax: 0.000, on.surtax: 0.000, on.health_premium: 0.000 }
+  - id: on-tax-25000
+    status: derived
+    inputs: { gross_annual: 25000, as_of: 2026-11-12 }
+    expect: { on.tax: 442.749, on.surtax: 0.000, on.health_premium: 287.100 }
+  - id: on-tax-45000
+    status: derived
+    inputs: { gross_annual: 45000, as_of: 2026-11-12 }
+    expect: { on.tax: 1454.817, on.surtax: 0.000, on.health_premium: 450.000 }
+  - id: on-tax-70000
+    status: derived
+    inputs: { gross_annual: 70000, as_of: 2026-11-12 }
+    expect: { on.tax: 3255.729, on.surtax: 0.000, on.health_premium: 600.000 }
+  - id: on-tax-110000
+    status: derived
+    inputs: { gross_annual: 110000, as_of: 2026-11-12 }
+    expect: { on.tax: 6883.826, on.surtax: 213.165, on.health_premium: 750.000 }
+  - id: on-tax-180000
+    status: derived
+    inputs: { gross_annual: 180000, as_of: 2026-11-12 }
+    expect: { on.tax: 14984.556, on.surtax: 4547.191, on.health_premium: 750.000 }
+  - id: on-overtime-statutory
+    status: derived
+    inputs: { wage: 20.00, gross_annual: 40000, as_of: 2026-11-12 }
+    expect: { on.overtime_hourly: 30.00, on.overtime_threshold_hours: 44 }
