@@ -1,0 +1,93 @@
+# United States, federal layer, tax year 2026.
+# Tier is "partial": federal income tax for a SINGLE filer taking the standard deduction, Social
+# Security and Medicare (FICA) are modelled. Computed as if this job were the person's only income
+# for a full tax year. State and local taxes live in subregion packs (not yet published).
+schema: 1
+id: US-2026
+kind: country
+region: { country: US }
+valid: { from: 2026-01-01, to: 2026-12-31 }
+revision: 1
+tier: partial
+currency: USD
+requires_engine: ">=1.0"
+labels: { en: "United States (2026)", fr: "États-Unis (2026)" }
+
+sources:
+  irs_inflation: { authority: official, title: "IRS: tax inflation adjustments for tax year 2026 (Rev. Proc. 2025-32, incl. One Big Beautiful Bill amendments)", url: "https://www.irs.gov/newsroom/irs-releases-tax-inflation-adjustments-for-tax-year-2026-including-amendments-from-the-one-big-beautiful-bill", retrieved: 2026-11-12 }
+  irs_tc751: { authority: official, title: "IRS Topic no. 751: Social Security and Medicare withholding rates", url: "https://irs.gov/taxtopics/tc751", retrieved: 2026-11-12 }
+  dol_flsa23: { authority: official, title: "US Department of Labor: Fact Sheet 23, overtime pay requirements of the FLSA", url: "https://www.dol.gov/whd/regs/compliance/whdfs23.htm", retrieved: 2026-11-12 }
+
+parameters:
+  fed.brackets:
+    source: irs_inflation
+    value:
+      - { up_to: 12400, rate: 0.10 }
+      - { up_to: 50400, rate: 0.12 }
+      - { up_to: 105700, rate: 0.22 }
+      - { up_to: 201775, rate: 0.24 }
+      - { up_to: 256225, rate: 0.32 }
+      - { up_to: 640600, rate: 0.35 }
+      - { rate: 0.37 }
+  fed.standard_deduction:
+    source: irs_inflation
+    value: 16100
+  fica:
+    source: irs_tc751
+    value: { ss_rate: 0.062, ss_wage_base: 184500, medicare_rate: 0.0145, addl_medicare_rate: 0.009, addl_medicare_threshold: 200000 }
+  flsa.overtime_after_hours:
+    source: dol_flsa23
+    value: 40
+
+inputs:
+  gross_annual: { type: money, label: "Annual gross employment income" }
+  # Taxable income that is not employment pay: taxed, but pays no FICA.
+  other_income: { type: money, default: 0, label: "Other taxable income" }
+  wage: { type: money, label: "Hourly wage", default: 0 }
+
+rules:
+  - id: ss.tax
+    label: { en: "Social Security tax" }
+    note: "6.2% of wages up to the annual wage base."
+    expr: min(gross_annual, $fica.ss_wage_base) * $fica.ss_rate
+  - id: medicare.tax
+    label: { en: "Medicare tax" }
+    note: "1.45% of all wages."
+    expr: gross_annual * $fica.medicare_rate
+  - id: medicare.additional
+    label: { en: "Additional Medicare tax" }
+    note: "0.9% of wages above 200,000 (employer withholding threshold, any filing status)."
+    expr: max(0, gross_annual - $fica.addl_medicare_threshold) * $fica.addl_medicare_rate
+
+  - { id: agi, expr: gross_annual + other_income }
+  - id: taxable_income
+    label: { en: "Federal taxable income" }
+    note: "Gross income less the single-filer standard deduction."
+    expr: max(0, agi - $fed.standard_deduction)
+  - id: fed.tax
+    label: { en: "Federal income tax" }
+    expr: bracket(taxable_income, $fed.brackets)
+
+  - id: overtime_hourly
+    public: true
+    label: { en: "Statutory minimum overtime rate" }
+    note: "Federal FLSA: time and a half the regular rate. State rules and exemptions are not modelled."
+    expr: 1.5 * wage
+  - id: overtime_threshold_hours
+    public: true
+    label: { en: "Overtime starts after (hours per week)" }
+    expr: $flsa.overtime_after_hours
+
+outputs:
+  income_tax:    [fed.tax]
+  contributions: [ss.tax, medicare.tax, medicare.additional]
+  overtime_rate: [overtime_hourly]
+  overtime_threshold_hours: [overtime_threshold_hours]
+
+not_modelled:
+  - filing_status_other_than_single
+  - tax_credits_and_itemized_deductions
+  - qualified_overtime_and_tips_deductions
+  - state_and_local_taxes
+  - unemployment_insurance_benefit_is_state_specific
+  - state_overtime_rules_and_exemptions

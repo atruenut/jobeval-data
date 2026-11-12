@@ -23,4 +23,13 @@ recorded (`docs/OFFICIAL_RUNS.md`).
 | CA-NT | yes | after 40 h, 1.5 x wage | daily rule not modelled |
 | CA-NU | yes | after 40 h, 1.5 x wage | daily rule not modelled |
 
-Not yet: Quebec (own system: QPP, QPIP, provincial return), anything outside Canada.
+Not yet: Quebec (own system: QPP, QPIP, provincial return).
+
+## United States
+
+| Pack | Modelled | Overtime | Not modelled |
+|---|---|---|---|
+| US-2026 | Federal income tax (single filer, standard deduction 16,100, brackets 10-37%), Social Security (6.2% to 184,500), Medicare 1.45%, Additional Medicare 0.9% over 200,000 | after 40 h, 1.5 x wage (FLSA) | other filing statuses, credits, itemizing, the 2025-2028 overtime/tips deductions, all state and local tax, state unemployment benefits, state overtime rules |
+
+Sources: IRS inflation adjustments for 2026, IRS Topic 751, DOL Fact Sheet 23. Tests are `derived`
+from `tools/reference_us.py`. State packs are the next step.

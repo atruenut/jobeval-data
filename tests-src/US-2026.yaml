@@ -1,0 +1,43 @@
+# Golden tests for US-2026.
+# status derived: independent arithmetic (tools/reference_us.py) from the IRS 2026 parameters, single filer,
+# standard deduction. Not an official run.
+suite: US-2026
+pack: US-2026
+tolerance: { abs: 0.01 }
+cases:
+  - id: us-12000
+    status: derived
+    inputs: { gross_annual: 12000, as_of: 2026-11-12 }
+    expect: { fed.tax: 0.000, ss.tax: 744.000, medicare.tax: 174.000, medicare.additional: 0.000, "@contributions": 918.000 }
+  - id: us-16100
+    status: derived
+    inputs: { gross_annual: 16100, as_of: 2026-11-12 }
+    expect: { fed.tax: 0.000, ss.tax: 998.200, medicare.tax: 233.450, medicare.additional: 0.000, "@contributions": 1231.650 }
+  - id: us-30000
+    status: derived
+    inputs: { gross_annual: 30000, as_of: 2026-11-12 }
+    expect: { fed.tax: 1420.000, ss.tax: 1860.000, medicare.tax: 435.000, medicare.additional: 0.000, "@contributions": 2295.000 }
+  - id: us-60000
+    status: derived
+    inputs: { gross_annual: 60000, as_of: 2026-11-12 }
+    expect: { fed.tax: 5020.000, ss.tax: 3720.000, medicare.tax: 870.000, medicare.additional: 0.000, "@contributions": 4590.000 }
+  - id: us-121800
+    status: derived
+    inputs: { gross_annual: 121800, as_of: 2026-11-12 }
+    expect: { fed.tax: 17966.000, ss.tax: 7551.600, medicare.tax: 1766.100, medicare.additional: 0.000, "@contributions": 9317.700 }
+  - id: us-150000
+    status: derived
+    inputs: { gross_annual: 150000, as_of: 2026-11-12 }
+    expect: { fed.tax: 24734.000, ss.tax: 9300.000, medicare.tax: 2175.000, medicare.additional: 0.000, "@contributions": 11475.000 }
+  - id: us-300000
+    status: derived
+    inputs: { gross_annual: 300000, as_of: 2026-11-12 }
+    expect: { fed.tax: 68134.250, ss.tax: 11439.000, medicare.tax: 4350.000, medicare.additional: 900.000, "@contributions": 16689.000 }
+  - id: us-700000
+    status: derived
+    inputs: { gross_annual: 700000, as_of: 2026-11-12 }
+    expect: { fed.tax: 209000.250, ss.tax: 11439.000, medicare.tax: 10150.000, medicare.additional: 4500.000, "@contributions": 26089.000 }
+  - id: us-overtime-statutory
+    status: derived
+    inputs: { wage: 20.00, gross_annual: 40000, as_of: 2026-11-12 }
+    expect: { overtime_hourly: 30.00, overtime_threshold_hours: 40 }
