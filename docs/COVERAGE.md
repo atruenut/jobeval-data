@@ -17,10 +17,10 @@ recorded (`docs/OFFICIAL_RUNS.md`).
 | CA-MB | yes, BPA phase-out (net income approximated by taxable income) | after 40 h, 1.5 x wage | daily rule not modelled |
 | CA-ON | yes, surtax, health premium, tax reduction | after 44 h, 1.5 x wage | |
 | CA-NS | yes | after 48 h, 1.5 x wage | managers etc. at minimum wage not modelled |
+| CA-PE | yes | after 48 h, 1.5 x wage | top 20% bracket over 200,000 is listed as proposed (Bill 23), applied for all of 2026; low-income reduction not modelled |
 | CA-NL | yes | none | overtime is paid at a minimum overtime rate ($24.53 from 2026-04-01) and the multiplier rule was not confirmed; left out |
 | CA-YT | yes (federal-style BPA) | none | no official source retrieved |
 | CA-NT | yes | after 40 h, 1.5 x wage | daily rule not modelled |
 | CA-NU | yes | after 40 h, 1.5 x wage | daily rule not modelled |
 
-Not yet: Prince Edward Island (T4127 table has a footnoted fifth bracket whose footnote was not
-retrieved), Quebec (own system: QPP, QPIP, provincial return), anything outside Canada.
+Not yet: Quebec (own system: QPP, QPIP, provincial return), anything outside Canada.

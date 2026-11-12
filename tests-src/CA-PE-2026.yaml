@@ -1,0 +1,40 @@
+# Golden tests for CA-PE-2026.
+# status derived: values from tools/reference_ca_provinces.py, an independent implementation of the
+# CRA T4127 formulas (V x A - KP form). Not an official run; tax lines against an official
+# calculator are still wanted (see docs/OFFICIAL_RUNS.md).
+suite: CA-PE-2026
+pack: CA-PE-2026
+tolerance: { abs: 0.01 }
+cases:
+  - id: pe-tax-12000
+    status: derived
+    inputs: { gross_annual: 12000, as_of: 2026-11-12 }
+    expect: { pe.tax: 0.000 }
+  - id: pe-tax-25000
+    status: derived
+    inputs: { gross_annual: 25000, as_of: 2026-11-12 }
+    expect: { pe.tax: 789.759 }
+  - id: pe-tax-45000
+    status: derived
+    inputs: { gross_annual: 45000, as_of: 2026-11-12 }
+    expect: { pe.tax: 2968.822 }
+  - id: pe-tax-70000
+    status: derived
+    inputs: { gross_annual: 70000, as_of: 2026-11-12 }
+    expect: { pe.tax: 6258.095 }
+  - id: pe-tax-110000
+    status: derived
+    inputs: { gross_annual: 110000, as_of: 2026-11-12 }
+    expect: { pe.tax: 12819.998 }
+  - id: pe-tax-180000
+    status: derived
+    inputs: { gross_annual: 180000, as_of: 2026-11-12 }
+    expect: { pe.tax: 25659.395 }
+  - id: pe-tax-250000
+    status: derived
+    inputs: { gross_annual: 250000, as_of: 2026-11-12 }
+    expect: { pe.tax: 39448.125 }
+  - id: pe-overtime-statutory
+    status: derived
+    inputs: { wage: 20.00, gross_annual: 40000, as_of: 2026-11-12 }
+    expect: { pe.overtime_hourly: 30.00, pe.overtime_threshold_hours: 48 }
