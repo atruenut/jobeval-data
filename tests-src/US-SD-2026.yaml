@@ -1,0 +1,22 @@
+# Golden tests for US-SD-2026.
+# status derived: tools/reference_us_states.py (own arithmetic from the cited state figures; not an official run).
+suite: US-SD-2026
+pack: US-SD-2026
+tolerance: { abs: 0.01 }
+cases:
+  - id: sd-tax-2000
+    status: derived
+    inputs: { gross_annual: 2000, as_of: 2026-11-12 }
+    expect: { sd.tax: 0.000 }
+  - id: sd-tax-30000
+    status: derived
+    inputs: { gross_annual: 30000, as_of: 2026-11-12 }
+    expect: { sd.tax: 0.000 }
+  - id: sd-tax-80000
+    status: derived
+    inputs: { gross_annual: 80000, as_of: 2026-11-12 }
+    expect: { sd.tax: 0.000 }
+  - id: sd-tax-250000
+    status: derived
+    inputs: { gross_annual: 250000, as_of: 2026-11-12 }
+    expect: { sd.tax: 0.000 }

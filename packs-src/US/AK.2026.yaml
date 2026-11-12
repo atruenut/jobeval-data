@@ -1,0 +1,28 @@
+# Alaska, state layer, tax year 2026. Extends US-2026.
+schema: 1
+id: US-AK-2026
+kind: subregion
+extends: US-2026
+region: { country: US, subregion: AK }
+valid: { from: 2026-01-01, to: 2026-12-31 }
+revision: 1
+tier: partial
+requires_engine: ">=1.0"
+labels: { en: "Alaska (2026)", fr: "Alaska (2026)" }
+
+sources:
+  tf_states: { authority: third_party, title: "Tax Foundation: state individual income tax rates, 2026 (states with no wage income tax)", url: "https://taxfoundation.org/data/all/state/state-income-tax-rates-2026/", retrieved: 2026-11-12 }
+
+rules:
+  - id: ak.tax
+    label: { en: "Alaska income tax" }
+    note: "No state tax on wages."
+    expr: "0"
+
+append:
+  income_tax: [ak.tax]
+
+not_modelled:
+  - state_payroll_programs
+  - state_unemployment_benefit
+  - state_overtime_rules

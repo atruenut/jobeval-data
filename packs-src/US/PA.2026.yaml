@@ -1,0 +1,34 @@
+# Pennsylvania, state layer, tax year 2026. Extends US-2026.
+schema: 1
+id: US-PA-2026
+kind: subregion
+extends: US-2026
+region: { country: US, subregion: PA }
+valid: { from: 2026-01-01, to: 2026-12-31 }
+revision: 1
+tier: partial
+requires_engine: ">=1.0"
+labels: { en: "Pennsylvania (2026)", fr: "Pennsylvanie (2026)" }
+
+sources:
+  pa_rates: { authority: official, title: "Pennsylvania Department of Revenue: current tax rates (personal income tax 3.07%)", url: "https://www.pa.gov/agencies/revenue/resources/tax-rates", retrieved: 2026-11-12 }
+
+parameters:
+  pa.rate:
+    source: pa_rates
+    value: 0.0307
+
+rules:
+  - id: pa.tax
+    label: { en: "Pennsylvania income tax" }
+    note: "3.07% of compensation; no standard deduction or personal exemption."
+    expr: (gross_annual + other_income) * $pa.rate
+
+append:
+  income_tax: [pa.tax]
+
+not_modelled:
+  - pa_local_earned_income_taxes
+  - pa_unemployment_and_other_payroll_programs
+  - state_unemployment_benefit
+  - state_overtime_rules

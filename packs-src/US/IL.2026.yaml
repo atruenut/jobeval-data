@@ -1,0 +1,37 @@
+# Illinois, state layer, tax year 2026. Extends US-2026.
+schema: 1
+id: US-IL-2026
+kind: subregion
+extends: US-2026
+region: { country: US, subregion: IL }
+valid: { from: 2026-01-01, to: 2026-12-31 }
+revision: 1
+tier: partial
+requires_engine: ">=1.0"
+labels: { en: "Illinois (2026)", fr: "Illinois (2026)" }
+
+sources:
+  il_exempt: { authority: official, title: "Illinois Comptroller Payroll Bulletin 1-26: Illinois income tax exemptions 2026 (rate 4.95%, exemption 2,925)", url: "https://illinoiscomptroller.gov/__media/sites/comptroller/assets/File/PayrollBulletins/Payroll%20Bulletin%201-26%20-%20Illinois%20State%20Income%20Tax%20Exemptions%20-%202026.pdf", retrieved: 2026-11-12 }
+
+parameters:
+  il.rate:
+    source: il_exempt
+    value: 0.0495
+  il.exemption:
+    source: il_exempt
+    value: 2925
+
+rules:
+  - id: il.tax
+    label: { en: "Illinois income tax" }
+    note: "4.95% of income (federal AGI base) less one 2,925 exemption."
+    expr: max(0, agi - $il.exemption) * $il.rate
+
+append:
+  income_tax: [il.tax]
+
+not_modelled:
+  - il_exemption_phaseout_for_high_income
+  - il_credits
+  - state_unemployment_benefit
+  - state_overtime_rules
