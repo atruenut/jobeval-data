@@ -97,6 +97,9 @@ one simply contributes nothing for it.
 |---|---|---|
 | input (supplied by app) | `gross_annual` | Annual gross employment pay for the job being evaluated, including statutory overtime |
 | input (supplied by app) | `wage` | Hourly wage |
+| input (optional, default 0) | `other_income` | Taxable income that is not employment pay (benefits, etc.): taxed, but not pensionable or insurable |
+| input (optional, default 0) | `prior_earnings_annual` | Annual earnings before an unemployment claim, for the benefit formula |
+| slot | `unemployment_weekly_benefit` | One rule: the weekly unemployment benefit given `prior_earnings_annual` (taxable) |
 | slot | `income_tax` | Employee income taxes (annual); every rule in the slot is shown as a line |
 | slot | `contributions` | Employee social contributions (annual), e.g. pension and insurance premiums |
 | slot | `overtime_rate` | One rule: the minimum hourly rate that applies beyond the threshold below |

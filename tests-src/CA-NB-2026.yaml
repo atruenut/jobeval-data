@@ -89,6 +89,17 @@ cases:
     inputs: { gross_annual: 200000, as_of: 2026-11-10 }
     expect: { cpp.enhanced_deduction: 1127.000, fed.bpa_amount: 16084.749, fed.tax: 38876.542, nb.tax: 25773.649 }
 
+  # Benefit-only income: taxed, but no CPP/EI contributions and no employment amount.
+  - id: ref-benefit-only-40k-prior
+    status: derived
+    inputs: { gross_annual: 0, other_income: 22000, prior_earnings_annual: 40000, as_of: 2026-11-10 }
+    expect: { ei.weekly_benefit: 423.077, cpp.base: 0, ei.premium: 0, fed.tax: 776.720, nb.tax: 783.584 }
+
+  - id: ref-benefit-only-capped
+    status: derived
+    inputs: { gross_annual: 0, other_income: 37895, prior_earnings_annual: 100000, as_of: 2026-11-10 }
+    expect: { ei.weekly_benefit: 728.750, fed.tax: 3002.020, nb.tax: 2277.714 }
+
   # To be filled from the CRA Payroll Deductions Online Calculator (NB, 2026, biweekly,
   # default TD1), one run per gross listed in docs/OFFICIAL_RUNS.md.
   - id: official-tax-50k
