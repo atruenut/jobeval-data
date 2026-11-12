@@ -1,0 +1,66 @@
+# Prince Edward Island, provincial layer, tax year 2026. Extends CA-2026.
+schema: 1
+id: CA-PE-2026
+kind: subregion
+extends: CA-2026
+region: { country: CA, subregion: PE }
+valid: { from: 2026-01-01, to: 2026-12-31 }
+revision: 1
+tier: partial
+requires_engine: ">=1.0"
+labels: { en: "Prince Edward Island (2026)", fr: "Île-du-Prince-Édouard (2026)" }
+
+sources:
+  pe_overtime: { authority: official, title: "Government of Prince Edward Island: hours of work and wage standards", url: "https://www.princeedwardisland.ca/en/topic/hours-of-work-and-wage-standards", retrieved: 2026-11-12 }
+  pe_finance: { authority: official, title: "Government of Prince Edward Island: provincial personal income tax (2026 rates; the 20% bracket over 200,000 is listed as proposed, Bill 23)", url: "https://www.princeedwardisland.ca/en/information/finance-and-affordability/provincial-personal-income-tax", retrieved: 2026-11-12 }
+
+parameters:
+  pe.brackets:
+    source: cra_t4127
+    value:
+      - { up_to: 33928, rate: 0.095 }
+      - { up_to: 65820, rate: 0.1347 }
+      - { up_to: 106890, rate: 0.166 }
+      - { up_to: 142250, rate: 0.1762 }
+      - { up_to: 200000, rate: 0.19 }
+      - { rate: 0.2 }   # over 200,000: pe_finance lists this bracket as proposed for all of 2026 (Bill 23); constant KP 8,460 follows by continuity
+  pe.credit_rate:
+    source: cra_t4127
+    value: 0.095
+  pe.bpa:
+    source: cra_t4127
+    value: 15000
+  pe.overtime_after_hours:
+    source: pe_overtime
+    value: 48
+
+inputs:
+  wage: { type: money, label: "Hourly wage", default: 0 }
+
+rules:
+  - id: pe.tax
+    label: { en: "Prince Edward Island income tax" }
+    note: "Brackets less the lowest-rate credit on the basic personal amount, CPP base portion and EI."
+    expr: max(0, bracket(taxable_income, $pe.brackets) - $pe.credit_rate * ($pe.bpa + cpp.base_credit_amount + ei.premium))
+  - id: pe.overtime_hourly
+    public: true
+    label: { en: "Statutory minimum overtime rate" }
+    note: "Time and a half. Daily overtime thresholds and special industries are not modelled."
+    expr: 1.5 * wage
+  - id: pe.overtime_threshold_hours
+    public: true
+    label: { en: "Overtime starts after (hours per week)" }
+    expr: $pe.overtime_after_hours
+
+append:
+  income_tax: [pe.tax]
+
+outputs:
+  overtime_rate: [pe.overtime_hourly]
+  overtime_threshold_hours: [pe.overtime_threshold_hours]
+
+not_modelled:
+  - pe_other_credits
+  - pe_low_income_tax_reduction
+  - pe_top_bracket_enactment_unconfirmed
+  - pe_daily_overtime_and_industry_exemptions
