@@ -1,0 +1,30 @@
+# Golden tests for US-NM-2026 (generated).
+# status derived: tools/reference_us_graduated.py (own arithmetic from the cited figures; not an official run).
+suite: US-NM-2026
+pack: US-NM-2026
+tolerance: { abs: 0.01 }
+cases:
+  - id: nm-tax-2000-fs1
+    status: derived
+    inputs: { gross_annual: 2000, filing_status: 1, as_of: 2026-11-13 }
+    expect: { nm.tax: 0.000 }
+  - id: nm-tax-30000-fs1
+    status: derived
+    inputs: { gross_annual: 30000, filing_status: 1, as_of: 2026-11-13 }
+    expect: { nm.tax: 351.300 }
+  - id: nm-tax-80000-fs1
+    status: derived
+    inputs: { gross_annual: 80000, filing_status: 1, as_of: 2026-11-13 }
+    expect: { nm.tax: 2594.300 }
+  - id: nm-tax-250000-fs1
+    status: derived
+    inputs: { gross_annual: 250000, filing_status: 1, as_of: 2026-11-13 }
+    expect: { nm.tax: 11158.100 }
+  - id: nm-tax-80000-fs2
+    status: derived
+    inputs: { gross_annual: 80000, filing_status: 2, as_of: 2026-11-13 }
+    expect: { nm.tax: 1644.400 }
+  - id: nm-tax-250000-fs2
+    status: derived
+    inputs: { gross_annual: 250000, filing_status: 2, as_of: 2026-11-13 }
+    expect: { nm.tax: 9861.200 }

@@ -1,0 +1,30 @@
+# Golden tests for US-CT-2026 (generated).
+# status derived: tools/reference_us_graduated.py (own arithmetic from the cited figures; not an official run).
+suite: US-CT-2026
+pack: US-CT-2026
+tolerance: { abs: 0.01 }
+cases:
+  - id: ct-tax-2000-fs1
+    status: derived
+    inputs: { gross_annual: 2000, filing_status: 1, as_of: 2026-11-13 }
+    expect: { ct.tax: 40.000 }
+  - id: ct-tax-30000-fs1
+    status: derived
+    inputs: { gross_annual: 30000, filing_status: 1, as_of: 2026-11-13 }
+    expect: { ct.tax: 1100.000 }
+  - id: ct-tax-80000-fs1
+    status: derived
+    inputs: { gross_annual: 80000, filing_status: 1, as_of: 2026-11-13 }
+    expect: { ct.tax: 3650.000 }
+  - id: ct-tax-250000-fs1
+    status: derived
+    inputs: { gross_annual: 250000, filing_status: 1, as_of: 2026-11-13 }
+    expect: { ct.tax: 14000.000 }
+  - id: ct-tax-80000-fs2
+    status: derived
+    inputs: { gross_annual: 80000, filing_status: 2, as_of: 2026-11-13 }
+    expect: { ct.tax: 3100.000 }
+  - id: ct-tax-250000-fs2
+    status: derived
+    inputs: { gross_annual: 250000, filing_status: 2, as_of: 2026-11-13 }
+    expect: { ct.tax: 12500.000 }

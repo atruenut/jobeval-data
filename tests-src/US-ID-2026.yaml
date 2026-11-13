@@ -1,0 +1,30 @@
+# Golden tests for US-ID-2026 (generated).
+# status derived: tools/reference_us_graduated.py (own arithmetic from the cited figures; not an official run).
+suite: US-ID-2026
+pack: US-ID-2026
+tolerance: { abs: 0.01 }
+cases:
+  - id: id-tax-2000-fs1
+    status: derived
+    inputs: { gross_annual: 2000, filing_status: 1, as_of: 2026-11-13 }
+    expect: { id.tax: 0.000 }
+  - id: id-tax-30000-fs1
+    status: derived
+    inputs: { gross_annual: 30000, filing_status: 1, as_of: 2026-11-13 }
+    expect: { id.tax: 481.717 }
+  - id: id-tax-80000-fs1
+    status: derived
+    inputs: { gross_annual: 80000, filing_status: 1, as_of: 2026-11-13 }
+    expect: { id.tax: 3131.717 }
+  - id: id-tax-250000-fs1
+    status: derived
+    inputs: { gross_annual: 250000, filing_status: 1, as_of: 2026-11-13 }
+    expect: { id.tax: 12141.717 }
+  - id: id-tax-80000-fs2
+    status: derived
+    inputs: { gross_annual: 80000, filing_status: 2, as_of: 2026-11-13 }
+    expect: { id.tax: 2023.434 }
+  - id: id-tax-250000-fs2
+    status: derived
+    inputs: { gross_annual: 250000, filing_status: 2, as_of: 2026-11-13 }
+    expect: { id.tax: 11033.434 }

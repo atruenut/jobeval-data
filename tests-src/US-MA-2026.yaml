@@ -1,0 +1,30 @@
+# Golden tests for US-MA-2026 (generated).
+# status derived: tools/reference_us_graduated.py (own arithmetic from the cited figures; not an official run).
+suite: US-MA-2026
+pack: US-MA-2026
+tolerance: { abs: 0.01 }
+cases:
+  - id: ma-tax-2000-fs1
+    status: derived
+    inputs: { gross_annual: 2000, filing_status: 1, as_of: 2026-11-13 }
+    expect: { ma.tax: 0.000 }
+  - id: ma-tax-30000-fs1
+    status: derived
+    inputs: { gross_annual: 30000, filing_status: 1, as_of: 2026-11-13 }
+    expect: { ma.tax: 1280.000 }
+  - id: ma-tax-80000-fs1
+    status: derived
+    inputs: { gross_annual: 80000, filing_status: 1, as_of: 2026-11-13 }
+    expect: { ma.tax: 3780.000 }
+  - id: ma-tax-250000-fs1
+    status: derived
+    inputs: { gross_annual: 250000, filing_status: 1, as_of: 2026-11-13 }
+    expect: { ma.tax: 12280.000 }
+  - id: ma-tax-80000-fs2
+    status: derived
+    inputs: { gross_annual: 80000, filing_status: 2, as_of: 2026-11-13 }
+    expect: { ma.tax: 3560.000 }
+  - id: ma-tax-250000-fs2
+    status: derived
+    inputs: { gross_annual: 250000, filing_status: 2, as_of: 2026-11-13 }
+    expect: { ma.tax: 12060.000 }

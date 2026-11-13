@@ -1,0 +1,30 @@
+# Golden tests for US-MO-2026 (generated).
+# status derived: tools/reference_us_graduated.py (own arithmetic from the cited figures; not an official run).
+suite: US-MO-2026
+pack: US-MO-2026
+tolerance: { abs: 0.01 }
+cases:
+  - id: mo-tax-2000-fs1
+    status: derived
+    inputs: { gross_annual: 2000, filing_status: 1, as_of: 2026-11-13 }
+    expect: { mo.tax: 0.000 }
+  - id: mo-tax-30000-fs1
+    status: derived
+    inputs: { gross_annual: 30000, filing_status: 1, as_of: 2026-11-13 }
+    expect: { mo.tax: 472.668 }
+  - id: mo-tax-80000-fs1
+    status: derived
+    inputs: { gross_annual: 80000, filing_status: 1, as_of: 2026-11-13 }
+    expect: { mo.tax: 2822.668 }
+  - id: mo-tax-250000-fs1
+    status: derived
+    inputs: { gross_annual: 250000, filing_status: 1, as_of: 2026-11-13 }
+    expect: { mo.tax: 10812.668 }
+  - id: mo-tax-80000-fs2
+    status: derived
+    inputs: { gross_annual: 80000, filing_status: 2, as_of: 2026-11-13 }
+    expect: { mo.tax: 2065.968 }
+  - id: mo-tax-250000-fs2
+    status: derived
+    inputs: { gross_annual: 250000, filing_status: 2, as_of: 2026-11-13 }
+    expect: { mo.tax: 10055.968 }

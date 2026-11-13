@@ -1,0 +1,30 @@
+# Golden tests for US-WV-2026 (generated).
+# status derived: tools/reference_us_graduated.py (own arithmetic from the cited figures; not an official run).
+suite: US-WV-2026
+pack: US-WV-2026
+tolerance: { abs: 0.01 }
+cases:
+  - id: wv-tax-2000-fs1
+    status: derived
+    inputs: { gross_annual: 2000, filing_status: 1, as_of: 2026-11-13 }
+    expect: { wv.tax: 0.000 }
+  - id: wv-tax-30000-fs1
+    status: derived
+    inputs: { gross_annual: 30000, filing_status: 1, as_of: 2026-11-13 }
+    expect: { wv.tax: 765.900 }
+  - id: wv-tax-80000-fs1
+    status: derived
+    inputs: { gross_annual: 80000, filing_status: 1, as_of: 2026-11-13 }
+    expect: { wv.tax: 2921.100 }
+  - id: wv-tax-250000-fs1
+    status: derived
+    inputs: { gross_annual: 250000, filing_status: 1, as_of: 2026-11-13 }
+    expect: { wv.tax: 11115.100 }
+  - id: wv-tax-80000-fs2
+    status: derived
+    inputs: { gross_annual: 80000, filing_status: 2, as_of: 2026-11-13 }
+    expect: { wv.tax: 2824.700 }
+  - id: wv-tax-250000-fs2
+    status: derived
+    inputs: { gross_annual: 250000, filing_status: 2, as_of: 2026-11-13 }
+    expect: { wv.tax: 11018.700 }

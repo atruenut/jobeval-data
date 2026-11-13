@@ -1,0 +1,30 @@
+# Golden tests for US-NJ-2026 (generated).
+# status derived: tools/reference_us_graduated.py (own arithmetic from the cited figures; not an official run).
+suite: US-NJ-2026
+pack: US-NJ-2026
+tolerance: { abs: 0.01 }
+cases:
+  - id: nj-tax-2000-fs1
+    status: derived
+    inputs: { gross_annual: 2000, filing_status: 1, as_of: 2026-11-13 }
+    expect: { nj.tax: 14.000 }
+  - id: nj-tax-30000-fs1
+    status: derived
+    inputs: { gross_annual: 30000, filing_status: 1, as_of: 2026-11-13 }
+    expect: { nj.tax: 437.500 }
+  - id: nj-tax-80000-fs1
+    status: derived
+    inputs: { gross_annual: 80000, filing_status: 1, as_of: 2026-11-13 }
+    expect: { nj.tax: 2907.800 }
+  - id: nj-tax-250000-fs1
+    status: derived
+    inputs: { gross_annual: 250000, filing_status: 1, as_of: 2026-11-13 }
+    expect: { nj.tax: 13736.800 }
+  - id: nj-tax-80000-fs2
+    status: derived
+    inputs: { gross_annual: 80000, filing_status: 2, as_of: 2026-11-13 }
+    expect: { nj.tax: 1575.000 }
+  - id: nj-tax-250000-fs2
+    status: derived
+    inputs: { gross_annual: 250000, filing_status: 2, as_of: 2026-11-13 }
+    expect: { nj.tax: 11758.600 }
