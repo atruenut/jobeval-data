@@ -42,3 +42,7 @@ CI does the same on every push and pull request. Merging to `main` signs the cat
 Each pack declares a `tier` (`estimate`, `partial`, `full`) and lists what it does not
 model under `not_modelled`. Figures here are estimates for decision support, not
 payroll-grade results.
+
+## Licence
+
+Data and documentation: CC BY 4.0. Scripts in `tools/`: MIT (`LICENSE-CODE`). See `LICENSE`.
