@@ -1,0 +1,30 @@
+# Golden tests for US-CA-2026.
+# status derived: tools/reference_us_ca.py (FTB 2026 Schedule X; own arithmetic, not an official run).
+suite: US-CA-2026
+pack: US-CA-2026
+tolerance: { abs: 0.01 }
+cases:
+  - id: ca-5000
+    status: derived
+    inputs: { gross_annual: 5000, as_of: 2026-11-12 }
+    expect: { ca.tax: 0.000, ca.sdi: 65.000 }
+  - id: ca-30000
+    status: derived
+    inputs: { gross_annual: 30000, as_of: 2026-11-12 }
+    expect: { ca.tax: 209.440, ca.sdi: 390.000 }
+  - id: ca-80000
+    status: derived
+    inputs: { gross_annual: 80000, as_of: 2026-11-12 }
+    expect: { ca.tax: 3065.120, ca.sdi: 1040.000 }
+  - id: ca-150000
+    status: derived
+    inputs: { gross_annual: 150000, as_of: 2026-11-12 }
+    expect: { ca.tax: 9560.859, ca.sdi: 1950.000 }
+  - id: ca-500000
+    status: derived
+    inputs: { gross_annual: 500000, as_of: 2026-11-12 }
+    expect: { ca.tax: 43542.499, ca.sdi: 6500.000 }
+  - id: ca-900000
+    status: derived
+    inputs: { gross_annual: 900000, as_of: 2026-11-12 }
+    expect: { ca.tax: 90001.371, ca.sdi: 11700.000 }

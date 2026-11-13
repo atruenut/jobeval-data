@@ -43,5 +43,6 @@ State packs (all extend `US-2026`, tier `partial`, tests derived from `tools/ref
 | US-MI | 4.25% flat after one 5,900 personal exemption | Michigan Treasury, calendar-year withholding page (official); city taxes not modelled |
 | US-KY | 3.5% flat after the 3,360 standard deduction | Kentucky DOR 2026 withholding formula (official); local occupational taxes not modelled |
 | US-GA | 4.99% flat after the 15,000 single standard deduction | Georgia DOR 2026 employer's tax guide, June 2026 revision (official) |
+| US-CA | FTB 2026 Schedule X (single) after the 5,900 standard deduction and 158 exemption credit, plus 1.3% SDI on all wages | FTB Tax News Oct 2026 and EDD (official). Complete 2026 schedules are due in late December: re-check then. Mental Health Services Tax over 1M, other filing statuses, renter's credit and daily overtime not modelled |
 
 Held back for lack of an official source for the full mechanics: IN (2.95% rate confirmed on in.gov, exemption and county taxes not), NC, MS, UT, CO, AZ and the other flat-tax states. Graduated states (CA, NY, ...) are not started.
