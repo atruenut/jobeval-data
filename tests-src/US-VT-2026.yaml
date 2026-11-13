@@ -1,0 +1,30 @@
+# Golden tests for US-VT-2026 (generated).
+# status derived: tools/reference_us_graduated.py (own arithmetic from the cited figures; not an official run).
+suite: US-VT-2026
+pack: US-VT-2026
+tolerance: { abs: 0.01 }
+cases:
+  - id: vt-tax-2000-fs1
+    status: derived
+    inputs: { gross_annual: 2000, filing_status: 1, as_of: 2026-11-13 }
+    expect: { vt.tax: 0.000 }
+  - id: vt-tax-30000-fs1
+    status: derived
+    inputs: { gross_annual: 30000, filing_status: 1, as_of: 2026-11-13 }
+    expect: { vt.tax: 571.175 }
+  - id: vt-tax-80000-fs1
+    status: derived
+    inputs: { gross_annual: 80000, filing_status: 1, as_of: 2026-11-13 }
+    expect: { vt.tax: 2819.800 }
+  - id: vt-tax-250000-fs1
+    status: derived
+    inputs: { gross_annual: 250000, filing_status: 1, as_of: 2026-11-13 }
+    expect: { vt.tax: 15213.300 }
+  - id: vt-tax-80000-fs2
+    status: derived
+    inputs: { gross_annual: 80000, filing_status: 2, as_of: 2026-11-13 }
+    expect: { vt.tax: 1812.350 }
+  - id: vt-tax-250000-fs2
+    status: derived
+    inputs: { gross_annual: 250000, filing_status: 2, as_of: 2026-11-13 }
+    expect: { vt.tax: 12355.850 }

@@ -1,0 +1,30 @@
+# Golden tests for US-KS-2026 (generated).
+# status derived: tools/reference_us_graduated.py (own arithmetic from the cited figures; not an official run).
+suite: US-KS-2026
+pack: US-KS-2026
+tolerance: { abs: 0.01 }
+cases:
+  - id: ks-tax-2000-fs1
+    status: derived
+    inputs: { gross_annual: 2000, filing_status: 1, as_of: 2026-11-13 }
+    expect: { ks.tax: 0.000 }
+  - id: ks-tax-30000-fs1
+    status: derived
+    inputs: { gross_annual: 30000, filing_status: 1, as_of: 2026-11-13 }
+    expect: { ks.tax: 896.220 }
+  - id: ks-tax-80000-fs1
+    status: derived
+    inputs: { gross_annual: 80000, filing_status: 1, as_of: 2026-11-13 }
+    expect: { ks.tax: 3664.313 }
+  - id: ks-tax-250000-fs1
+    status: derived
+    inputs: { gross_annual: 250000, filing_status: 1, as_of: 2026-11-13 }
+    expect: { ks.tax: 13150.313 }
+  - id: ks-tax-80000-fs2
+    status: derived
+    inputs: { gross_annual: 80000, filing_status: 2, as_of: 2026-11-13 }
+    expect: { ks.tax: 2807.152 }
+  - id: ks-tax-250000-fs2
+    status: derived
+    inputs: { gross_annual: 250000, filing_status: 2, as_of: 2026-11-13 }
+    expect: { ks.tax: 12293.152 }
