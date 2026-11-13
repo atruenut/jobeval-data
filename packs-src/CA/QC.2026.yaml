@@ -1,0 +1,89 @@
+# Quebec, 2026. Tier "estimate": the federal side (QPP instead of CPP, reduced EI rate, QPIP, the
+# 16.5% Quebec abatement) follows CRA T4032QC, the Quebec contribution rates and tax brackets are
+# from Revenu Quebec, but Revenu Quebec's own payroll formulas (TP-1015.F-V) could not be retrieved,
+# so several provincial deductions and credits are NOT modelled. Quebec income tax is therefore
+# OVERSTATED by a few hundred dollars a year for a typical employee (see not_modelled).
+schema: 1
+id: CA-QC-2026
+kind: subregion
+extends: CA-2026
+region: { country: CA, subregion: QC }
+valid: { from: 2026-01-01, to: 2026-12-31 }
+revision: 1
+tier: estimate
+requires_engine: ">=1.1"
+labels: { en: "Quebec (2026)", fr: "Québec (2026)" }
+
+sources:
+  rq_2026: { authority: official, title: "Revenu Quebec: Principal Changes for 2026 (QPP, QPIP, Quebec tax brackets, basic personal amount)", url: "https://www.revenuquebec.ca/en/businesses/source-deductions-and-employer-contributions/employers-principal-changes-for-2026/", retrieved: 2026-11-12 }
+  cra_t4032qc: { authority: official, title: "CRA T4032QC, January 2026: payroll deductions tables for Quebec (federal calculation, abatement, QPP/QPIP/EI treatment)", url: "https://www.canada.ca/en/revenue-agency/services/forms-publications/payroll/t4032-payroll-deductions-tables/t4032qc-jan/t4032qc-january-general-information.html", retrieved: 2026-11-12 }
+  esdc_ei_qc: { authority: official, title: "ESDC question period note: 2026 EI premium rate (1.63 per 100; 1.30 per 100 in Quebec; maximum insurable earnings 68,900)", url: "https://search.open.canada.ca/qpnotes/record/esdc-edsc%2CEF_054_20260105", retrieved: 2026-11-12 }
+
+replace: [cpp, ei, cpp.base, cpp.second, fed.tax, fed.credits, contributions]
+
+parameters:
+  # The Quebec Pension Plan takes the place of the CPP (same structure: base 5.3%, first additional 1%,
+  # second additional 4% between 74,600 and 85,000).
+  cpp:
+    source: rq_2026
+    value: { rate: 0.063, base_rate: 0.053, enhanced_rate: 0.01, exemption: 3500, ympe: 74600, yampe: 85000, rate2: 0.04 }
+  ei:
+    source: esdc_ei_qc
+    value: { rate: 0.013, max_insurable: 68900 }
+  qpip:
+    source: rq_2026
+    value: { rate: 0.0043, max_insurable: 103000 }
+  qc.abatement:
+    source: cra_t4032qc
+    value: 0.165
+  qc.brackets:
+    source: rq_2026
+    value:
+      - { up_to: 54345, rate: 0.14 }
+      - { up_to: 108680, rate: 0.19 }
+      - { up_to: 132245, rate: 0.24 }
+      - { rate: 0.2575 }
+  qc.bpa:
+    source: rq_2026
+    value: 18952
+  qc.credit_rate:
+    source: rq_2026
+    value: 0.14
+
+rules:
+  - id: cpp.base
+    label: { en: "QPP contributions" }
+    expr: clamp(pensionable - $cpp.exemption, 0, $cpp.ympe - $cpp.exemption) * $cpp.rate
+  - id: cpp.second
+    label: { en: "QPP second additional contributions" }
+    expr: clamp(pensionable - $cpp.ympe, 0, $cpp.yampe - $cpp.ympe) * $cpp.rate2
+  - id: qpip.premium
+    label: { en: "QPIP premium" }
+    expr: min(gross_annual, $qpip.max_insurable) * $qpip.rate
+  # Federal: credit rate x (basic personal amount + QPP base part + Quebec EI + QPIP + Canada
+  # employment amount); the Quebec abatement then takes 16.5% off the basic federal tax.
+  - id: fed.credits
+    label: { en: "Federal non-refundable credits" }
+    note: "Credit rate x (basic personal amount + QPP base portion + EI + QPIP + Canada employment amount)."
+    expr: $fed.credit_rate * (fed.bpa_amount + cpp.base_credit_amount + ei.premium + qpip.premium + min(gross_annual, $fed.cea))
+  - id: fed.tax
+    label: { en: "Federal income tax (after the Quebec abatement)" }
+    note: "Basic federal tax after credits, less 16.5%."
+    expr: max(0, bracket(taxable_income, $fed.brackets) - fed.credits) * (1 - $qc.abatement)
+  - id: qc.tax
+    label: { en: "Quebec income tax (estimate)" }
+    note: "Quebec brackets on income after the enhanced QPP deduction, less 14% of the basic personal amount. Deduction for workers and premium credits are not applied."
+    expr: max(0, bracket(taxable_income, $qc.brackets) - $qc.credit_rate * $qc.bpa)
+
+append:
+  income_tax: [qc.tax]
+
+outputs:
+  contributions: [cpp.base, cpp.second, ei.premium, qpip.premium]
+
+not_modelled:
+  - qc_deduction_for_workers_max_1450_rate_unverified
+  - qc_credits_or_deductions_for_qpp_ei_qpip_premiums
+  - qc_family_and_other_credits_and_solidarity_credit
+  - qc_statutory_overtime
+  - qpip_and_ei_interaction_for_unemployment_benefits
