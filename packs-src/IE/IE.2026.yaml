@@ -1,0 +1,73 @@
+# Ireland, calendar year 2026: income tax (single person, PAYE credits), Universal Social Charge and
+# employee PRSI (Class A). Ireland has no statutory overtime rate, so no overtime rule is provided.
+schema: 1
+id: IE-2026
+kind: country
+region: { country: IE }
+valid: { from: 2026-01-01, to: 2026-12-31 }
+revision: 1
+tier: partial
+currency: EUR
+requires_engine: ">=1.1"
+labels: { en: "Ireland (2026)", fr: "Irlande (2026)" }
+
+sources:
+  gt_ie: { authority: third_party, title: "Grant Thornton Ireland: Budget 2026 payroll summary (20%/40%, standard rate band 44,000, credits 2,000 each; USC 2% band raised to 28,700)", url: "https://www.grantthornton.ie/insights/budget/payroll-summary/", retrieved: 2026-11-13 }
+  brightpay_ie: { authority: third_party, title: "BrightPay Ireland: Budget 2026 employer focus (USC 0.5% to 12,012, 2% to 28,700 per other sources, 3% to 70,044, 8% above)", url: "https://www.brightpay.ie/docs/bpol/2026-budget-employer-focus/", retrieved: 2026-11-13 }
+  gov_prsi: { authority: official, title: "gov.ie: PRSI Class A rates (employee 4.20% to 30 Sep 2026, 4.35% from 1 Oct 2026; nil up to 352 a week; tapered 12 a week credit between 352.01 and 424)", url: "https://www.gov.ie/en/publication/ffa563-prsi-class-a-rates", retrieved: 2026-11-13 }
+
+parameters:
+  ie.brackets:
+    source: gt_ie
+    value:
+      - { up_to: 44000, rate: 0.20 }
+      - { rate: 0.40 }
+  ie.credits:
+    source: gt_ie
+    value: { personal: 2000, employee: 2000 }
+  ie.usc:
+    source: brightpay_ie
+    value:
+      exempt_up_to: 13000
+      brackets:
+        - { up_to: 12012, rate: 0.005 }
+        - { up_to: 28700, rate: 0.02 }
+        - { up_to: 70044, rate: 0.03 }
+        - { rate: 0.08 }
+  ie.prsi:
+    source: gov_prsi
+    # Whole-year rate: 9 months at 4.20% and 3 months at 4.35% (4.2375%).
+    value: { rate: 0.042375, weekly_exempt_up_to: 352, weekly_credit: 12, credit_ends_at: 424, weeks: 52 }
+
+inputs:
+  gross_annual: { type: money, label: "Annual gross employment income" }
+  other_income: { type: money, default: 0, label: "Other taxable income" }
+  wage: { type: money, label: "Hourly wage", default: 0 }
+
+rules:
+  - { id: income, expr: gross_annual + other_income }
+  - id: ie.tax
+    label: { en: "Income tax (PAYE)" }
+    note: "20% to 44,000 and 40% above, less the personal and employee credits (2,000 each)."
+    expr: max(0, bracket(income, $ie.brackets) - $ie.credits.personal - $ie.credits.employee)
+  - id: ie.usc
+    label: { en: "Universal Social Charge" }
+    note: "Nothing when income is 13,000 or less; otherwise 0.5%, 2%, 3% and 8% by band."
+    expr: if(income <= $ie.usc.exempt_up_to, 0, bracket(income, $ie.usc.brackets))
+  - id: ie.prsi
+    label: { en: "PRSI (Class A, employee)" }
+    note: "4.2375% (the 2026 blend of 4.20% and 4.35%) of pay, nothing when weekly pay is 352 or less, less a tapered credit of up to 12 a week between 352 and 424. Assumes steady weekly pay."
+    expr: if(gross_annual / $ie.prsi.weeks <= $ie.prsi.weekly_exempt_up_to, 0, max(0, gross_annual / $ie.prsi.weeks * $ie.prsi.rate - max(0, $ie.prsi.weekly_credit - (gross_annual / $ie.prsi.weeks - $ie.prsi.weekly_exempt_up_to) / 6)) * $ie.prsi.weeks)
+
+outputs:
+  income_tax:    [ie.tax]
+  contributions: [ie.usc, ie.prsi]
+
+not_modelled:
+  - pension_contributions_and_other_reliefs
+  - earned_income_credit_for_the_self_employed
+  - prsi_rate_change_timing_within_the_year_is_blended
+  - usc_reduced_rates_for_medical_card_holders_and_over_70s
+  - employer_prsi
+  - jobseekers_benefit
+  - statutory_holiday_and_sick_pay_not_modelled

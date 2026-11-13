@@ -1,0 +1,57 @@
+# New Zealand, tax year 1 April 2026 to 31 March 2027: resident income tax on employment income and the
+# ACC earners' levy. NZ has no statutory overtime pay, so no overtime rule is provided.
+schema: 1
+id: NZ-2026
+kind: country
+region: { country: NZ }
+valid: { from: 2026-04-01, to: 2027-03-31 }
+revision: 1
+tier: partial
+currency: NZD
+requires_engine: ">=1.1"
+labels: { en: "New Zealand (2026-27)", fr: "Nouvelle-Zélande (2026-2027)" }
+
+sources:
+  deloitte_nz: { authority: third_party, title: "Deloitte: New Zealand highlights 2026 (resident individual rates 10.5/17.5/30/33/39%)", url: "https://www.deloitte.com/content/dam/assets-shared/docs/services/tax/2026/dttl-tax-newzealandhighlights-2026.pdf", retrieved: 2026-11-13 }
+  bt_facts: { authority: third_party, title: "Baker Tilly Staples Rodway: 2026 Tax Facts (same rates; ACC earners' levy 1.75 per 100 and maximum earnings 156,641 for 2026/27)", url: "https://bakertillysr.nz/assets/Uploads/Documents/2026-Tax-Facts-A4-for-web-download-DIGI.pdf", retrieved: 2026-11-13 }
+
+parameters:
+  nz.brackets:
+    source: deloitte_nz
+    value:
+      - { up_to: 15600, rate: 0.105 }
+      - { up_to: 53500, rate: 0.175 }
+      - { up_to: 78100, rate: 0.30 }
+      - { up_to: 180000, rate: 0.33 }
+      - { rate: 0.39 }
+  nz.acc:
+    source: bt_facts
+    value: { rate: 0.0175, max_earnings: 156641 }
+
+inputs:
+  gross_annual: { type: money, label: "Annual gross employment income" }
+  other_income: { type: money, default: 0, label: "Other taxable income" }
+  wage: { type: money, label: "Hourly wage", default: 0 }
+
+rules:
+  - { id: income, expr: gross_annual + other_income }
+  - id: nz.tax
+    label: { en: "Income tax (PAYE)" }
+    expr: bracket(income, $nz.brackets)
+  - id: nz.acc
+    label: { en: "ACC earners' levy" }
+    note: "1.75% of earnings up to the maximum of 156,641 (the published rate includes GST)."
+    expr: min(gross_annual, $nz.acc.max_earnings) * $nz.acc.rate
+
+outputs:
+  income_tax:    [nz.tax]
+  contributions: [nz.acc]
+
+not_modelled:
+  - kiwisaver_employee_contributions_3_5_percent_optional
+  - student_loan_repayments
+  - working_for_families_and_other_credits
+  - independent_earner_credit
+  - employer_contributions
+  - unemployment_benefit_jobseeker_support
+  - statutory_holiday_and_sick_pay_not_modelled

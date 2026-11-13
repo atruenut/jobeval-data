@@ -1,0 +1,64 @@
+# Australia, financial year 1 July 2026 to 30 June 2027: resident income tax on employment income, the Low
+# Income Tax Offset and the Medicare levy. Awards (not statute) set overtime, so no overtime rule is provided.
+schema: 1
+id: AU-2026
+kind: country
+region: { country: AU }
+valid: { from: 2026-07-01, to: 2027-06-30 }
+revision: 1
+tier: estimate
+currency: AUD
+requires_engine: ">=1.1"
+labels: { en: "Australia (2026-27)", fr: "Australie (2026-2027)" }
+
+sources:
+  superguide: { authority: third_party, title: "Super Guide: income tax rates and brackets (2026-27 resident rates with the 16% band cut to 15%; LITO 700 phasing out; Medicare levy 2%, thresholds shown are 2025-26 because 2026-27 ones were not announced)", url: "https://www.superguide.com.au/how-super-works/income-tax-rates-brackets", retrieved: 2026-11-13 }
+
+parameters:
+  au.brackets:
+    source: superguide
+    value:
+      - { up_to: 18200, rate: 0 }
+      - { up_to: 45000, rate: 0.15 }
+      - { up_to: 135000, rate: 0.30 }
+      - { up_to: 190000, rate: 0.37 }
+      - { rate: 0.45 }
+  au.lito:
+    source: superguide
+    value: { max: 700, full_to: 37500, rate1: 0.05, mid: 45000, mid_amount: 325, rate2: 0.015 }
+  au.medicare:
+    source: superguide
+    value: { rate: 0.02, low_threshold: 28011, shade_in_rate: 0.10 }
+
+inputs:
+  gross_annual: { type: money, label: "Annual gross employment income" }
+  other_income: { type: money, default: 0, label: "Other taxable income" }
+  wage: { type: money, label: "Hourly wage", default: 0 }
+
+rules:
+  - { id: income, expr: gross_annual + other_income }
+  - id: au.lito
+    label: { en: "Low Income Tax Offset" }
+    note: "700 up to 37,500, falling by 5 cents per dollar to 325 at 45,000, then by 1.5 cents per dollar to nil at about 66,667."
+    expr: max(0, if(income <= $au.lito.full_to, $au.lito.max, if(income <= $au.lito.mid, $au.lito.max - $au.lito.rate1 * (income - $au.lito.full_to), $au.lito.mid_amount - $au.lito.rate2 * (income - $au.lito.mid))))
+  - id: au.tax
+    label: { en: "Income tax (after the Low Income Tax Offset)" }
+    expr: max(0, bracket(income, $au.brackets) - au.lito)
+  - id: au.medicare
+    label: { en: "Medicare levy" }
+    note: "2% of income; nothing at or under the low-income threshold, then 10 cents per dollar over it until it reaches 2%."
+    expr: if(income <= $au.medicare.low_threshold, 0, min(income * $au.medicare.rate, (income - $au.medicare.low_threshold) * $au.medicare.shade_in_rate))
+
+outputs:
+  income_tax:    [au.tax]
+  contributions: [au.medicare]
+
+not_modelled:
+  - medicare_levy_2026_27_thresholds_not_yet_announced_2025_26_used
+  - proposed_2026_27_budget_measures_such_as_a_1000_deduction
+  - medicare_levy_surcharge_and_family_thresholds
+  - hecs_help_student_loan_repayments
+  - superannuation_is_paid_by_the_employer_on_top
+  - work_deductions_and_other_offsets
+  - unemployment_benefit_jobseeker_payment
+  - statutory_holiday_and_sick_pay_not_modelled
