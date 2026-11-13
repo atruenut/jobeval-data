@@ -23,7 +23,7 @@ recorded (`docs/OFFICIAL_RUNS.md`).
 | CA-NT | yes | after 40 h, 1.5 x wage | daily rule not modelled |
 | CA-NU | yes | after 40 h, 1.5 x wage | daily rule not modelled |
 
-Not yet: Quebec (own system: QPP, QPIP, provincial return).
+| CA-QC | **estimate** | none (CNESST rule not checked) | Quebec brackets and BPA, QPP (6.3%, second ceiling), QPIP 0.43%, reduced EI 1.30%, 16.5% federal abatement. Revenu Quebec's own payroll formulas could not be retrieved, so the deduction for workers (max 1,450) and the credit/deduction treatment of QPP, EI and QPIP premiums are not applied: Quebec tax is overstated by a few hundred dollars a year. Promote to partial once TP-1015.F-V is read |
 
 ## United States
 

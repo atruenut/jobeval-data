@@ -1,0 +1,26 @@
+# Golden tests for CA-QC-2026 (tier estimate).
+# status derived: tools/reference_ca_qc.py. Federal side in the CRA R x A - K form; Quebec side per the pack's documented simplifications. Not official runs.
+suite: CA-QC-2026
+pack: CA-QC-2026
+tolerance: { abs: 0.01 }
+cases:
+  - id: qc-20000
+    status: derived
+    inputs: { gross_annual: 20000, as_of: 2026-11-12 }
+    expect: { fed.tax: 77.329, qc.tax: 123.620, cpp.base: 1039.500, cpp.second: 0.000, ei.premium: 260.000, qpip.premium: 86.000 }
+  - id: qc-45000
+    status: derived
+    inputs: { gross_annual: 45000, as_of: 2026-11-12 }
+    expect: { fed.tax: 2765.153, qc.tax: 3588.620, cpp.base: 2614.500, cpp.second: 0.000, ei.premium: 585.000, qpip.premium: 193.500 }
+  - id: qc-70000
+    status: derived
+    inputs: { gross_annual: 70000, as_of: 2026-11-12 }
+    expect: { fed.tax: 6041.469, qc.tax: 7803.120, cpp.base: 4189.500, cpp.second: 0.000, ei.premium: 895.700, qpip.premium: 301.000 }
+  - id: qc-80000
+    status: derived
+    inputs: { gross_annual: 80000, as_of: 2026-11-12 }
+    expect: { fed.tax: 7674.844, qc.tax: 9653.340, cpp.base: 4479.300, cpp.second: 216.000, ei.premium: 895.700, qpip.premium: 344.000 }
+  - id: qc-120000
+    status: derived
+    inputs: { gross_annual: 120000, as_of: 2026-11-12 }
+    expect: { fed.tax: 14559.999, qc.tax: 17724.990, cpp.base: 4479.300, cpp.second: 416.000, ei.premium: 895.700, qpip.premium: 442.900 }
