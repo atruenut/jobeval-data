@@ -1,0 +1,36 @@
+# Georgia, state layer, tax year 2026. Extends US-2026.
+schema: 1
+id: US-GA-2026
+kind: subregion
+extends: US-2026
+region: { country: US, subregion: GA }
+valid: { from: 2026-01-01, to: 2026-12-31 }
+revision: 1
+tier: partial
+requires_engine: ">=1.1"
+labels: { en: "Georgia (2026)", fr: "Géorgie (2026)" }
+
+sources:
+  ga_guide: { authority: official, title: "Georgia Department of Revenue: 2026 employer's tax guide, updated June 2026 (flat rate 4.99%, standard deduction 15,000 for single)", url: "https://dor.georgia.gov/document/document/2026-employers-tax-guide-updated-june-2026/download", retrieved: 2026-11-12 }
+
+parameters:
+  ga.rate:
+    source: ga_guide
+    value: 0.0499
+  ga.deduction:
+    source: ga_guide
+    value: 15000
+
+rules:
+  - id: ga.tax
+    label: { en: "Georgia income tax" }
+    note: "4.99% flat rate of income less the 15,000 single-filer standard deduction."
+    expr: max(0, agi - $ga.deduction) * $ga.rate
+
+append:
+  income_tax: [ga.tax]
+
+not_modelled:
+  - ga_dependent_exemptions_and_credits
+  - state_unemployment_benefit
+  - state_overtime_rules
