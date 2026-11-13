@@ -82,3 +82,9 @@ match the annual 12,570 and 50,270), Scottish Government rates and bands. Tests 
 | Pack | Modelled | Source | Not modelled |
 |---|---|---|---|
 | IE-2026 (calendar 2026, partial) | Income tax 20/40% to a 44,000 cut-off less the 2,000 personal and 2,000 employee credits (single person), USC (0.5/2/3/8%), employee PRSI (4.20% to 30 Sep, 4.35% from 1 Oct: modelled as a 4.2375% whole-year blend, with the 352 a week exemption and the tapered 12 a week credit) | gov.ie PRSI page (official); Grant Thornton and BrightPay for tax and USC (third party; the 2% USC band top, 28,700, comes from two sources, one other said 27,800) | Reliefs, pension, married/one-parent credits, medical-card USC rate, jobseeker's benefit. No statutory overtime |
+
+## Germany
+
+| Pack | Modelled | Source | Not modelled |
+|---|---|---|---|
+| DE-2026 (calendar 2026, partial) | Tax class I income tax by the statutory section 32a tariff (basic allowance 12,348), solidarity surcharge (20,350 allowance, 11.9% cap), employee pension, unemployment, health (7.3% plus half the 2.9% average extra) and care (1.8%, +0.6% if childless) with the 2026 ceilings; a children choice input | § 32a EStG (official); AOK, TK and WunderTax for the rest (third party) | Church tax, other tax classes and splitting, exact Vorsorgepauschale, private health insurance, child allowances, whole-euro rounding. No statutory overtime premium |

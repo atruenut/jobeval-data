@@ -1,0 +1,104 @@
+# Germany, calendar year 2026: income tax (tax class I, no church tax), solidarity surcharge and the employee
+# share of social insurance. Germany has no statutory overtime premium, so no overtime rule is provided.
+schema: 1
+id: DE-2026
+kind: country
+region: { country: DE }
+valid: { from: 2026-01-01, to: 2026-12-31 }
+revision: 1
+tier: partial
+currency: EUR
+requires_engine: ">=1.1"
+labels: { en: "Germany (2026)", fr: "Allemagne (2026)" }
+
+sources:
+  estg32a: { authority: official, title: "Bundesamt für Justiz: § 32a EStG, tariff for the assessment year 2026 (basic allowance 12,348)", url: "https://www.gesetze-im-internet.de/estg/__32a.html", retrieved: 2026-11-13 }
+  aok_sv: { authority: third_party, title: "AOK: Beiträge und Rechengrößen 2026 (rates: pension 18.6, unemployment 2.6, health 14.6 plus average extra 2.9, care 3.6 / 4.2 without children; ceilings 101,400 and 69,750)", url: "https://www.aok.de/fk/fileadmin/user_upload/jahreswechsel/2026/aok-trends-und-tipps-2026-checkbrief-beitraege-und-rechengroessen.pdf", retrieved: 2026-11-13 }
+  tk_soli: { authority: third_party, title: "Techniker Krankenkasse: Solidaritätszuschlag 2026 (allowance 20,350 of tax, 5.5%, capped at 11.9% of the excess)", url: "https://www.tk.de/firmenkunden/service/fachthemen/fachthema-beitraege/solidaritaetszuschlag-bundesfinanzhof-2075802", retrieved: 2026-11-13 }
+  wundertax: { authority: third_party, title: "WunderTax: Steueränderungen 2026 (employee lump sum for work costs 1,230)", url: "https://wundertax.de/ratgeber-steuern/steueraenderungen-2026/", retrieved: 2026-11-13 }
+
+parameters:
+  de.tariff:
+    source: estg32a
+    value:
+      basic_allowance: 12348
+      zone2_end: 17799
+      zone3_end: 69878
+      zone4_end: 277825
+      z2_a: 914.51
+      z2_b: 1400
+      z3_a: 173.1
+      z3_b: 2397
+      z3_c: 1034.87
+      z4_rate: 0.42
+      z4_const: 11135.63
+      z5_rate: 0.45
+      z5_const: 19470.38
+  de.work_costs:
+    source: wundertax
+    value: 1230
+  de.soli:
+    source: tk_soli
+    value: { allowance: 20350, rate: 0.055, mild_rate: 0.119 }
+  de.sv:
+    source: aok_sv
+    # Employee share (half of the total, except the childless care surcharge which employees pay alone).
+    value: { pension: 0.093, unemployment: 0.013, health: 0.073, health_extra: 0.0145, care: 0.018, care_childless: 0.006, ceiling_pension: 101400, ceiling_health: 69750 }
+
+inputs:
+  children:
+    type: choice
+    label: "Children (for the long-term care premium)"
+    default: 1
+    options:
+      - { value: 1, label: "Has children (or is under 23)" }
+      - { value: 2, label: "No children, 23 or older" }
+  gross_annual: { type: money, label: "Annual gross employment income" }
+  other_income: { type: money, default: 0, label: "Other taxable income" }
+  wage: { type: money, label: "Hourly wage", default: 0 }
+
+rules:
+  - id: de.pension
+    label: { en: "Pension insurance (employee share)" }
+    expr: min(gross_annual, $de.sv.ceiling_pension) * $de.sv.pension
+  - id: de.unemployment
+    label: { en: "Unemployment insurance (employee share)" }
+    expr: min(gross_annual, $de.sv.ceiling_pension) * $de.sv.unemployment
+  - id: de.health
+    label: { en: "Health insurance (employee share, average extra contribution)" }
+    note: "7.3% plus half of the average 2.9% extra contribution; the real extra rate depends on the insurer."
+    expr: min(gross_annual, $de.sv.ceiling_health) * ($de.sv.health + $de.sv.health_extra)
+  - id: de.care
+    label: { en: "Long-term care insurance (employee share)" }
+    note: "1.8%, plus 0.6% for people without children aged 23 or older. Saxony splits the cost differently."
+    expr: min(gross_annual, $de.sv.ceiling_health) * ($de.sv.care + if(children == 2, $de.sv.care_childless, 0))
+  - id: de.zve
+    label: { en: "Taxable income" }
+    note: "Pay and other income less the 1,230 work-cost lump sum and the employee pension, health and care contributions (the unemployment share is left out because the deduction cap is normally used by health and care)."
+    expr: max(0, gross_annual + other_income - $de.work_costs - de.pension - de.health - de.care)
+  - { id: de.y, expr: (de.zve - $de.tariff.basic_allowance) / 10000 }
+  - { id: de.z, expr: (de.zve - $de.tariff.zone2_end) / 10000 }
+  - id: de.tax
+    label: { en: "Income tax" }
+    note: "The statutory tariff of section 32a, tax class I."
+    expr: if(de.zve <= $de.tariff.basic_allowance, 0, if(de.zve <= $de.tariff.zone2_end, ($de.tariff.z2_a * de.y + $de.tariff.z2_b) * de.y, if(de.zve <= $de.tariff.zone3_end, ($de.tariff.z3_a * de.z + $de.tariff.z3_b) * de.z + $de.tariff.z3_c, if(de.zve <= $de.tariff.zone4_end, $de.tariff.z4_rate * de.zve - $de.tariff.z4_const, $de.tariff.z5_rate * de.zve - $de.tariff.z5_const))))
+  - id: de.soli
+    label: { en: "Solidarity surcharge" }
+    note: "5.5% of income tax, but only on tax above 20,350 and at most 11.9% of the excess."
+    expr: min($de.soli.rate * de.tax, max(0, $de.soli.mild_rate * (de.tax - $de.soli.allowance)))
+
+outputs:
+  income_tax:    [de.tax, de.soli]
+  contributions: [de.pension, de.unemployment, de.health, de.care]
+
+not_modelled:
+  - church_tax
+  - tax_classes_other_than_one_and_married_splitting
+  - sonderausgaben_lump_sum_36_and_other_deductions
+  - exact_vorsorgepauschale_and_health_insurance_sick_pay_share
+  - private_health_insurance
+  - child_allowances_and_child_benefit
+  - rounding_of_taxable_income_down_to_whole_euros
+  - employer_contributions
+  - unemployment_benefit_buergergeld_alg1
+  - statutory_holiday_and_sick_pay_not_modelled
