@@ -1,0 +1,30 @@
+# Golden tests for GB-SCT-2026.
+# status derived: tools/reference_gb.py arithmetic (own, from the GOV.UK / Scottish Government figures; not an official HMRC run).
+suite: GB-SCT-2026
+pack: GB-SCT-2026
+tolerance: { abs: 0.01 }
+cases:
+  - id: sct-10000
+    status: derived
+    inputs: { gross_annual: 10000, as_of: 2026-11-12 }
+    expect: { sct.tax: 0.000, ni.employee: 0.000 }
+  - id: sct-25000
+    status: derived
+    inputs: { gross_annual: 25000, as_of: 2026-11-12 }
+    expect: { sct.tax: 2446.330, ni.employee: 994.400 }
+  - id: sct-50270
+    status: derived
+    inputs: { gross_annual: 50270, as_of: 2026-11-12 }
+    expect: { sct.tax: 9095.450, ni.employee: 3016.000 }
+  - id: sct-80000
+    status: derived
+    inputs: { gross_annual: 80000, as_of: 2026-11-12 }
+    expect: { sct.tax: 21732.050, ni.employee: 3610.600 }
+  - id: sct-110000
+    status: derived
+    inputs: { gross_annual: 110000, as_of: 2026-11-12 }
+    expect: { sct.tax: 37482.050, ni.employee: 4210.600 }
+  - id: sct-150000
+    status: derived
+    inputs: { gross_annual: 150000, as_of: 2026-11-12 }
+    expect: { sct.tax: 59634.350, ni.employee: 5010.600 }

@@ -1,0 +1,42 @@
+# Scotland: replaces the rest-of-UK income tax rates with the Scottish bands (six rates).
+# National Insurance is the same as in the rest of the UK.
+schema: 1
+id: GB-SCT-2026
+kind: subregion
+extends: GB-2026
+region: { country: GB, subregion: SCT }
+valid: { from: 2026-04-06, to: 2027-04-05 }
+revision: 1
+tier: partial
+requires_engine: ">=1.1"
+labels: { en: "Scotland (2026-27)", fr: "Écosse (2026-2027)" }
+
+sources:
+  scot_bands: { authority: official, title: "Scottish Government: Scottish Income Tax rates and bands 2026 to 2027 (the page called them proposed; confirm against the final Scottish Budget order)", url: "https://www.gov.scot/publications/scottish-income-tax-rates-and-bands/pages/2026-to-2027/", retrieved: 2026-11-12 }
+
+parameters:
+  # Taxable-income bands (published income bands less the 12,570 allowance): 16,537, 29,526,
+  # 43,662, 75,000 and 125,140 of income give 3,967, 16,956, 31,092, 62,430 and 125,140 of taxable income.
+  sct.brackets:
+    source: scot_bands
+    value:
+      - { up_to: 3967, rate: 0.19 }
+      - { up_to: 16956, rate: 0.20 }
+      - { up_to: 31092, rate: 0.21 }
+      - { up_to: 62430, rate: 0.42 }
+      - { up_to: 125140, rate: 0.45 }
+      - { rate: 0.48 }
+
+rules:
+  - id: sct.tax
+    label: { en: "Scottish income tax" }
+    expr: bracket(taxable_income, $sct.brackets)
+
+replace: [income_tax]
+
+outputs:
+  income_tax: [sct.tax]
+
+not_modelled:
+  - scottish_budget_confirmation_of_final_rates
+  - scottish_tax_credits_and_reliefs
