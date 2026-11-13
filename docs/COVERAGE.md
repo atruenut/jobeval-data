@@ -44,9 +44,13 @@ State packs (all extend `US-2026`, tier `partial`, tests derived from `tools/ref
 | US-KY | 3.5% flat after the 3,360 standard deduction | Kentucky DOR 2026 withholding formula (official); local occupational taxes not modelled |
 | US-GA | 4.99% flat after the 15,000 single standard deduction | Georgia DOR 2026 employer's tax guide, June 2026 revision (official) |
 | US-CA | FTB 2026 Schedule X (single) after the 5,900 standard deduction and 158 exemption credit, plus 1.3% SDI on all wages | FTB Tax News Oct 2026 and EDD (official). Complete 2026 schedules are due in late December: re-check then. Mental Health Services Tax over 1M, other filing statuses, renter's credit and daily overtime not modelled |
+| US-AZ | 2.5% flat after the standard deduction (8,350 single, 16,700 joint) | Tax Foundation 2026 (third party); HoH uses the single amount; dependent credit not modelled |
+| US-CO | 4.4% flat of federal taxable income | Tax Foundation 2026 (third party); rate can change under TABOR refund rules |
+| US-IN | 2.95% flat after the personal exemption (1,000 single, 2,000 joint) | Tax Foundation 2026 (third party); county income taxes not modelled; drops to 2.9% in 2027 |
+| US-LA | 3% flat after the standard deduction (12,875 single, 25,750 joint) | Tax Foundation 2026 (third party); HoH uses the single amount |
 | US-NC | 3.99% flat after the 12,750 single standard deduction | NC DOR NC-30 for 2026 (official) |
 
-Held back for lack of an official source for the full mechanics: IN (rate 2.95% and 1,000 exemption seen only in a draft federal payroll bulletin, and county income taxes are large and local), MS, UT, CO, AZ and the other flat-tax states. Graduated states (CA, NY, ...) are not started.
+Held back: MS, UT, OH, MA, ID and the other states whose 2026 mechanics could not be confirmed (Ohio's exemption depends on income, Utah's deduction is a phased credit, Idaho's bracket widths are 2025 figures). Third-party sources that are widely trusted (Tax Foundation) are accepted, labelled `authority: third_party`, until an official page can be checked. Graduated states (NY, ...) are not started.
 
 ## United Kingdom
 

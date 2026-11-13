@@ -5,7 +5,8 @@ import sys
 from decimal import Decimal as D, ROUND_HALF_UP
 # code: (rate, deduction or exemption subtracted from gross income, base)
 NONE = ["AK", "FL", "NV", "NH", "SD", "TN", "TX", "WA", "WY"]
-FLAT = {"PA": (D("0.0307"), D(0)), "IL": (D("0.0495"), D(2925)), "MI": (D("0.0425"), D(5900)), "KY": (D("0.035"), D(3360)), "GA": (D("0.0499"), D(15000)), "NC": (D("0.0399"), D(12750))}
+FLAT = {"PA": (D("0.0307"), D(0)), "IL": (D("0.0495"), D(2925)), "MI": (D("0.0425"), D(5900)), "KY": (D("0.035"), D(3360)), "GA": (D("0.0499"), D(15000)), "NC": (D("0.0399"), D(12750)),
+        "AZ": (D("0.025"), D(8350)), "IN": (D("0.0295"), D(1000)), "LA": (D("0.03"), D(12875)), "CO": (D("0.044"), D(16100))}
 q = lambda x: x.quantize(D("0.001"), ROUND_HALF_UP)
 def tax(code, gross):
     if code in NONE: return D(0)

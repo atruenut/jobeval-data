@@ -1,0 +1,26 @@
+# Golden tests for US-CO-2026.
+# status derived: tools/reference_us_states.py (own arithmetic from the cited figures; not an official run).
+suite: US-CO-2026
+pack: US-CO-2026
+tolerance: { abs: 0.01 }
+cases:
+  - id: co-tax-2000
+    status: derived
+    inputs: { gross_annual: 2000, filing_status: 1, as_of: 2026-11-13 }
+    expect: { co.tax: 0.000 }
+  - id: co-tax-30000
+    status: derived
+    inputs: { gross_annual: 30000, filing_status: 1, as_of: 2026-11-13 }
+    expect: { co.tax: 611.600 }
+  - id: co-tax-80000
+    status: derived
+    inputs: { gross_annual: 80000, filing_status: 1, as_of: 2026-11-13 }
+    expect: { co.tax: 2811.600 }
+  - id: co-tax-250000
+    status: derived
+    inputs: { gross_annual: 250000, filing_status: 1, as_of: 2026-11-13 }
+    expect: { co.tax: 10291.600 }
+  - id: co-tax-mfj-80000
+    status: derived
+    inputs: { gross_annual: 80000, filing_status: 2, as_of: 2026-11-13 }
+    expect: { co.tax: 2103.200 }
