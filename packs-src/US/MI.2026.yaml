@@ -1,0 +1,37 @@
+# Michigan, state layer, tax year 2026. Extends US-2026.
+schema: 1
+id: US-MI-2026
+kind: subregion
+extends: US-2026
+region: { country: US, subregion: MI }
+valid: { from: 2026-01-01, to: 2026-12-31 }
+revision: 1
+tier: partial
+requires_engine: ">=1.1"
+labels: { en: "Michigan (2026)", fr: "Michigan (2026)" }
+
+sources:
+  mi_rates: { authority: official, title: "Michigan Department of Treasury: calendar-year withholding information 2026 (rate 4.25%, personal exemption 5,900)", url: "https://www.michigan.gov/taxes/business-taxes/withholding/calendar-year-tax-information", retrieved: 2026-11-12 }
+
+parameters:
+  mi.rate:
+    source: mi_rates
+    value: 0.0425
+  mi.deduction:
+    source: mi_rates
+    value: 5900
+
+rules:
+  - id: mi.tax
+    label: { en: "Michigan income tax" }
+    note: "4.25% of income less one 5,900 personal exemption."
+    expr: max(0, agi - $mi.deduction) * $mi.rate
+
+append:
+  income_tax: [mi.tax]
+
+not_modelled:
+  - mi_city_income_taxes
+  - mi_credits
+  - state_unemployment_benefit
+  - state_overtime_rules

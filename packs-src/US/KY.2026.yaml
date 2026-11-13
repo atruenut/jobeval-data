@@ -1,0 +1,37 @@
+# Kentucky, state layer, tax year 2026. Extends US-2026.
+schema: 1
+id: US-KY-2026
+kind: subregion
+extends: US-2026
+region: { country: US, subregion: KY }
+valid: { from: 2026-01-01, to: 2026-12-31 }
+revision: 1
+tier: partial
+requires_engine: ">=1.1"
+labels: { en: "Kentucky (2026)", fr: "Kentucky (2026)" }
+
+sources:
+  ky_withholding: { authority: official, title: "Kentucky Department of Revenue: 2026 withholding formula (rate 3.5%, standard deduction 3,360)", url: "https://revenue.ky.gov/Forms/2026%20Withholding%20Formula.pdf", retrieved: 2026-11-12 }
+
+parameters:
+  ky.rate:
+    source: ky_withholding
+    value: 0.035
+  ky.deduction:
+    source: ky_withholding
+    value: 3360
+
+rules:
+  - id: ky.tax
+    label: { en: "Kentucky income tax" }
+    note: "3.5% of income less the 3,360 standard deduction."
+    expr: max(0, agi - $ky.deduction) * $ky.rate
+
+append:
+  income_tax: [ky.tax]
+
+not_modelled:
+  - ky_local_occupational_taxes
+  - ky_credits
+  - state_unemployment_benefit
+  - state_overtime_rules

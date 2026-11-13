@@ -40,5 +40,8 @@ State packs (all extend `US-2026`, tier `partial`, tests derived from `tools/ref
 | US-AK, FL, NV, NH, SD, TN, TX, WA, WY | none on wages | Tax Foundation 2026 (third party: confirm against each state when convenient). WA payroll premiums not modelled |
 | US-PA | 3.07% flat, no deduction | PA Department of Revenue (official); local earned-income taxes not modelled |
 | US-IL | 4.95% flat after one 2,925 exemption | Illinois Comptroller Payroll Bulletin 1-26 (official); high-income exemption phase-out not modelled |
+| US-MI | 4.25% flat after one 5,900 personal exemption | Michigan Treasury, calendar-year withholding page (official); city taxes not modelled |
+| US-KY | 3.5% flat after the 3,360 standard deduction | Kentucky DOR 2026 withholding formula (official); local occupational taxes not modelled |
+| US-GA | 4.99% flat after the 15,000 single standard deduction | Georgia DOR 2026 employer's tax guide, June 2026 revision (official) |
 
-Held back for lack of an official source for the deduction: MI (4.25% rate confirmed by Treasury, exemption not), IN, NC and the other flat-tax states. Graduated states (CA, NY, ...) are not started.
+Held back for lack of an official source for the full mechanics: IN (2.95% rate confirmed on in.gov, exemption and county taxes not), NC, MS, UT, CO, AZ and the other flat-tax states. Graduated states (CA, NY, ...) are not started.
