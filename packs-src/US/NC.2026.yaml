@@ -1,0 +1,36 @@
+# North Carolina, state layer, tax year 2026. Extends US-2026.
+schema: 1
+id: US-NC-2026
+kind: subregion
+extends: US-2026
+region: { country: US, subregion: NC }
+valid: { from: 2026-01-01, to: 2026-12-31 }
+revision: 1
+tier: partial
+requires_engine: ">=1.1"
+labels: { en: "North Carolina (2026)", fr: "Caroline du Nord (2026)" }
+
+sources:
+  nc_nc30: { authority: official, title: "North Carolina Department of Revenue: NC-30 income tax withholding tables and instructions for employers, tax year 2026 (rate 3.99%, standard deduction 12,750 for a single person)", url: "https://www.ncdor.gov/income-tax-withholding-tables-and-instructions-employers/open", retrieved: 2026-11-13 }
+
+parameters:
+  nc.rate:
+    source: nc_nc30
+    value: 0.0399
+  nc.deduction:
+    source: nc_nc30
+    value: 12750
+
+rules:
+  - id: nc.tax
+    label: { en: "North Carolina income tax" }
+    note: "3.99% flat rate of income less the 12,750 single-filer standard deduction."
+    expr: max(0, agi - $nc.deduction) * $nc.rate
+
+append:
+  income_tax: [nc.tax]
+
+not_modelled:
+  - nc_other_filing_statuses_and_credits
+  - state_unemployment_benefit
+  - state_overtime_rules
