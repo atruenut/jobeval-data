@@ -1,0 +1,41 @@
+# Arizona, state layer, tax year 2026. Extends US-2026.
+schema: 1
+id: US-AZ-2026
+kind: subregion
+extends: US-2026
+region: { country: US, subregion: AZ }
+valid: { from: 2026-01-01, to: 2026-12-31 }
+revision: 1
+tier: partial
+requires_engine: ">=1.1"
+labels: { en: "Arizona (2026)", fr: "Arizona (2026)" }
+
+sources:
+  tf_rates: { authority: third_party, title: "Tax Foundation: 2026 State Individual Income Tax Rates and Brackets (rates as of 1 Jan 2026)", url: "https://taxfoundation.org/data/all/state/state-income-tax-rates-2026/", retrieved: 2026-11-13 }
+
+parameters:
+  az.rate:
+    source: tf_rates
+    value: 0.025
+  az.deduction.single:
+    source: tf_rates
+    value: 8350
+  az.deduction.mfj:
+    source: tf_rates
+    value: 16700
+
+rules:
+  - id: az.tax
+    label: { en: "Arizona income tax" }
+    note: "2.5% flat rate of income less the standard deduction (single 8,350, married filing jointly 16,700; head of household uses the single amount)."
+    expr: max(0, agi - if(filing_status == 2, $az.deduction.mfj, $az.deduction.single)) * $az.rate
+
+append:
+  income_tax: [az.tax]
+
+not_modelled:
+  - az_dependent_credit
+  - az_hoh_deduction_unconfirmed
+  - az_charitable_deduction_increase
+  - state_unemployment_benefit
+  - state_overtime_rules

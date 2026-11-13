@@ -1,0 +1,26 @@
+# Golden tests for US-LA-2026.
+# status derived: tools/reference_us_states.py (own arithmetic from the cited figures; not an official run).
+suite: US-LA-2026
+pack: US-LA-2026
+tolerance: { abs: 0.01 }
+cases:
+  - id: la-tax-2000
+    status: derived
+    inputs: { gross_annual: 2000, filing_status: 1, as_of: 2026-11-13 }
+    expect: { la.tax: 0.000 }
+  - id: la-tax-30000
+    status: derived
+    inputs: { gross_annual: 30000, filing_status: 1, as_of: 2026-11-13 }
+    expect: { la.tax: 513.750 }
+  - id: la-tax-80000
+    status: derived
+    inputs: { gross_annual: 80000, filing_status: 1, as_of: 2026-11-13 }
+    expect: { la.tax: 2013.750 }
+  - id: la-tax-250000
+    status: derived
+    inputs: { gross_annual: 250000, filing_status: 1, as_of: 2026-11-13 }
+    expect: { la.tax: 7113.750 }
+  - id: la-tax-mfj-80000
+    status: derived
+    inputs: { gross_annual: 80000, filing_status: 2, as_of: 2026-11-13 }
+    expect: { la.tax: 1627.500 }
