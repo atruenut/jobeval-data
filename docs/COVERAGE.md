@@ -46,3 +46,14 @@ State packs (all extend `US-2026`, tier `partial`, tests derived from `tools/ref
 | US-CA | FTB 2026 Schedule X (single) after the 5,900 standard deduction and 158 exemption credit, plus 1.3% SDI on all wages | FTB Tax News Oct 2026 and EDD (official). Complete 2026 schedules are due in late December: re-check then. Mental Health Services Tax over 1M, other filing statuses, renter's credit and daily overtime not modelled |
 
 Held back for lack of an official source for the full mechanics: IN (2.95% rate confirmed on in.gov, exemption and county taxes not), NC, MS, UT, CO, AZ and the other flat-tax states. Graduated states (CA, NY, ...) are not started.
+
+## United Kingdom
+
+| Pack | Modelled | Overtime | Not modelled |
+|---|---|---|---|
+| GB-2026 (tax year 6 Apr 2026 to 5 Apr 2027) | Income tax for England, Wales and Northern Ireland (Personal Allowance 12,570 with the 100,000 taper; 20/40/45%), employee Class 1 National Insurance (8% between 12,570 and 50,270, 2% above) | none (the UK has no statutory overtime pay) | student loan, pension deductions, savings/dividend/marriage allowances, tax codes, benefits in kind, unemployment benefit |
+| GB-SCT-2026 | Scottish bands (19/20/21/42/45/48%) replacing the rest-of-UK income tax; same NI | none | as above; the Scottish Government page called the 2026-27 bands "proposed": confirm against the final Budget order |
+
+Sources: GOV.UK income tax rates, GOV.UK NI rates and allowances (monthly thresholds 1,048 and 4,189
+match the annual 12,570 and 50,270), Scottish Government rates and bands. Tests are `derived` from
+`tools/reference_gb.py`. Wales and Northern Ireland use the rest-of-UK rates (Wales sets no different rates today).
