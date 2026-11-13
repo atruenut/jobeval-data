@@ -1,25 +1,26 @@
 # United States, federal layer, tax year 2026.
-# Tier is "partial": federal income tax for a SINGLE filer taking the standard deduction, Social
-# Security and Medicare (FICA) are modelled. Computed as if this job were the person's only income
+# Tier is "partial": federal income tax (single, married filing jointly or head of household, standard
+# deduction; chosen with the filing_status input), Social Security and Medicare (FICA) are modelled. Computed as if this job were the person's only income
 # for a full tax year. State and local taxes live in subregion packs (not yet published).
 schema: 1
 id: US-2026
 kind: country
 region: { country: US }
 valid: { from: 2026-01-01, to: 2026-12-31 }
-revision: 1
+revision: 2
 tier: partial
 currency: USD
-requires_engine: ">=1.0"
+requires_engine: ">=1.1"
 labels: { en: "United States (2026)", fr: "États-Unis (2026)" }
 
 sources:
   irs_inflation: { authority: official, title: "IRS: tax inflation adjustments for tax year 2026 (Rev. Proc. 2025-32, incl. One Big Beautiful Bill amendments)", url: "https://www.irs.gov/newsroom/irs-releases-tax-inflation-adjustments-for-tax-year-2026-including-amendments-from-the-one-big-beautiful-bill", retrieved: 2026-11-12 }
   irs_tc751: { authority: official, title: "IRS Topic no. 751: Social Security and Medicare withholding rates", url: "https://irs.gov/taxtopics/tc751", retrieved: 2026-11-12 }
+  tf_brackets: { authority: third_party, title: "Tax Foundation: 2026 tax brackets (head of household column, from IRS Rev. Proc. 2025-32); confirm against the Revenue Procedure", url: "https://taxfoundation.org/data/all/federal/2026-tax-brackets/", retrieved: 2026-11-12 }
   dol_flsa23: { authority: official, title: "US Department of Labor: Fact Sheet 23, overtime pay requirements of the FLSA", url: "https://www.dol.gov/whd/regs/compliance/whdfs23.htm", retrieved: 2026-11-12 }
 
 parameters:
-  fed.brackets:
+  fed.brackets_single:
     source: irs_inflation
     value:
       - { up_to: 12400, rate: 0.10 }
@@ -29,9 +30,29 @@ parameters:
       - { up_to: 256225, rate: 0.32 }
       - { up_to: 640600, rate: 0.35 }
       - { rate: 0.37 }
+  fed.brackets_mfj:
+    source: irs_inflation
+    value:
+      - { up_to: 24800, rate: 0.10 }
+      - { up_to: 100800, rate: 0.12 }
+      - { up_to: 211400, rate: 0.22 }
+      - { up_to: 403550, rate: 0.24 }
+      - { up_to: 512450, rate: 0.32 }
+      - { up_to: 768700, rate: 0.35 }
+      - { rate: 0.37 }
+  fed.brackets_hoh:
+    source: tf_brackets
+    value:
+      - { up_to: 17700, rate: 0.10 }
+      - { up_to: 67450, rate: 0.12 }
+      - { up_to: 105700, rate: 0.22 }
+      - { up_to: 201750, rate: 0.24 }
+      - { up_to: 256200, rate: 0.32 }
+      - { up_to: 640600, rate: 0.35 }
+      - { rate: 0.37 }
   fed.standard_deduction:
     source: irs_inflation
-    value: 16100
+    value: { single: 16100, mfj: 32200, hoh: 24150 }
   fica:
     source: irs_tc751
     value: { ss_rate: 0.062, ss_wage_base: 184500, medicare_rate: 0.0145, addl_medicare_rate: 0.009, addl_medicare_threshold: 200000 }
@@ -40,6 +61,14 @@ parameters:
     value: 40
 
 inputs:
+  filing_status:
+    type: choice
+    label: "Federal filing status"
+    default: 1
+    options:
+      - { value: 1, label: "Single" }
+      - { value: 2, label: "Married filing jointly (this job's pay only)" }
+      - { value: 3, label: "Head of household" }
   gross_annual: { type: money, label: "Annual gross employment income" }
   # Taxable income that is not employment pay: taxed, but pays no FICA.
   other_income: { type: money, default: 0, label: "Other taxable income" }
@@ -62,11 +91,11 @@ rules:
   - { id: agi, expr: gross_annual + other_income }
   - id: taxable_income
     label: { en: "Federal taxable income" }
-    note: "Gross income less the single-filer standard deduction."
-    expr: max(0, agi - $fed.standard_deduction)
+    note: "Gross income less the standard deduction for the chosen filing status."
+    expr: max(0, agi - if(filing_status == 2, $fed.standard_deduction.mfj, if(filing_status == 3, $fed.standard_deduction.hoh, $fed.standard_deduction.single)))
   - id: fed.tax
     label: { en: "Federal income tax" }
-    expr: bracket(taxable_income, $fed.brackets)
+    expr: if(filing_status == 2, bracket(taxable_income, $fed.brackets_mfj), if(filing_status == 3, bracket(taxable_income, $fed.brackets_hoh), bracket(taxable_income, $fed.brackets_single)))
 
   - id: overtime_hourly
     public: true
@@ -85,7 +114,8 @@ outputs:
   overtime_threshold_hours: [overtime_threshold_hours]
 
 not_modelled:
-  - filing_status_other_than_single
+  - married_filing_separately_and_qualifying_surviving_spouse
+  - spouse_income_and_dependants
   - tax_credits_and_itemized_deductions
   - qualified_overtime_and_tips_deductions
   - state_and_local_taxes

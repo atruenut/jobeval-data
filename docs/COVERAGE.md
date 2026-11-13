@@ -29,7 +29,7 @@ Not yet: Quebec (own system: QPP, QPIP, provincial return).
 
 | Pack | Modelled | Overtime | Not modelled |
 |---|---|---|---|
-| US-2026 | Federal income tax (single filer, standard deduction 16,100, brackets 10-37%), Social Security (6.2% to 184,500), Medicare 1.45%, Additional Medicare 0.9% over 200,000 | after 40 h, 1.5 x wage (FLSA) | other filing statuses, credits, itemizing, the 2025-2028 overtime/tips deductions, all state and local tax, state unemployment benefits, state overtime rules |
+| US-2026 | Federal income tax (single, married filing jointly or head of household, chosen in the app; standard deduction 16,100 / 32,200 / 24,150; brackets 10-37%; head-of-household brackets are from Tax Foundation citing Rev. Proc. 2025-32, to be confirmed), Social Security (6.2% to 184,500), Medicare 1.45%, Additional Medicare 0.9% over 200,000 | after 40 h, 1.5 x wage (FLSA) | married filing separately, spouse income, credits, itemizing, the 2025-2028 overtime/tips deductions, all state and local tax, state unemployment benefits, state overtime rules |
 
 Sources: IRS inflation adjustments for 2026, IRS Topic 751, DOL Fact Sheet 23. Tests are `derived`
 from `tools/reference_us.py`. 

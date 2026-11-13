@@ -5,38 +5,90 @@ suite: US-2026
 pack: US-2026
 tolerance: { abs: 0.01 }
 cases:
-  - id: us-12000
+  - id: us-single-12000
     status: derived
-    inputs: { gross_annual: 12000, as_of: 2026-11-12 }
+    inputs: { gross_annual: 12000, filing_status: 1, as_of: 2026-11-12 }
     expect: { fed.tax: 0.000, ss.tax: 744.000, medicare.tax: 174.000, medicare.additional: 0.000, "@contributions": 918.000 }
-  - id: us-16100
+  - id: us-single-30000
     status: derived
-    inputs: { gross_annual: 16100, as_of: 2026-11-12 }
-    expect: { fed.tax: 0.000, ss.tax: 998.200, medicare.tax: 233.450, medicare.additional: 0.000, "@contributions": 1231.650 }
-  - id: us-30000
-    status: derived
-    inputs: { gross_annual: 30000, as_of: 2026-11-12 }
+    inputs: { gross_annual: 30000, filing_status: 1, as_of: 2026-11-12 }
     expect: { fed.tax: 1420.000, ss.tax: 1860.000, medicare.tax: 435.000, medicare.additional: 0.000, "@contributions": 2295.000 }
-  - id: us-60000
+  - id: us-single-60000
     status: derived
-    inputs: { gross_annual: 60000, as_of: 2026-11-12 }
+    inputs: { gross_annual: 60000, filing_status: 1, as_of: 2026-11-12 }
     expect: { fed.tax: 5020.000, ss.tax: 3720.000, medicare.tax: 870.000, medicare.additional: 0.000, "@contributions": 4590.000 }
-  - id: us-121800
+  - id: us-single-150000
     status: derived
-    inputs: { gross_annual: 121800, as_of: 2026-11-12 }
-    expect: { fed.tax: 17966.000, ss.tax: 7551.600, medicare.tax: 1766.100, medicare.additional: 0.000, "@contributions": 9317.700 }
-  - id: us-150000
-    status: derived
-    inputs: { gross_annual: 150000, as_of: 2026-11-12 }
+    inputs: { gross_annual: 150000, filing_status: 1, as_of: 2026-11-12 }
     expect: { fed.tax: 24734.000, ss.tax: 9300.000, medicare.tax: 2175.000, medicare.additional: 0.000, "@contributions": 11475.000 }
-  - id: us-300000
+  - id: us-single-300000
     status: derived
-    inputs: { gross_annual: 300000, as_of: 2026-11-12 }
+    inputs: { gross_annual: 300000, filing_status: 1, as_of: 2026-11-12 }
     expect: { fed.tax: 68134.250, ss.tax: 11439.000, medicare.tax: 4350.000, medicare.additional: 900.000, "@contributions": 16689.000 }
-  - id: us-700000
+  - id: us-single-700000
     status: derived
-    inputs: { gross_annual: 700000, as_of: 2026-11-12 }
+    inputs: { gross_annual: 700000, filing_status: 1, as_of: 2026-11-12 }
     expect: { fed.tax: 209000.250, ss.tax: 11439.000, medicare.tax: 10150.000, medicare.additional: 4500.000, "@contributions": 26089.000 }
+  - id: us-single-900000
+    status: derived
+    inputs: { gross_annual: 900000, filing_status: 1, as_of: 2026-11-12 }
+    expect: { fed.tax: 283000.250, ss.tax: 11439.000, medicare.tax: 13050.000, medicare.additional: 6300.000, "@contributions": 30789.000 }
+  - id: us-mfj-12000
+    status: derived
+    inputs: { gross_annual: 12000, filing_status: 2, as_of: 2026-11-12 }
+    expect: { fed.tax: 0.000, ss.tax: 744.000, medicare.tax: 174.000, medicare.additional: 0.000, "@contributions": 918.000 }
+  - id: us-mfj-30000
+    status: derived
+    inputs: { gross_annual: 30000, filing_status: 2, as_of: 2026-11-12 }
+    expect: { fed.tax: 0.000, ss.tax: 1860.000, medicare.tax: 435.000, medicare.additional: 0.000, "@contributions": 2295.000 }
+  - id: us-mfj-60000
+    status: derived
+    inputs: { gross_annual: 60000, filing_status: 2, as_of: 2026-11-12 }
+    expect: { fed.tax: 2840.000, ss.tax: 3720.000, medicare.tax: 870.000, medicare.additional: 0.000, "@contributions": 4590.000 }
+  - id: us-mfj-150000
+    status: derived
+    inputs: { gross_annual: 150000, filing_status: 2, as_of: 2026-11-12 }
+    expect: { fed.tax: 15340.000, ss.tax: 9300.000, medicare.tax: 2175.000, medicare.additional: 0.000, "@contributions": 11475.000 }
+  - id: us-mfj-300000
+    status: derived
+    inputs: { gross_annual: 300000, filing_status: 2, as_of: 2026-11-12 }
+    expect: { fed.tax: 49468.000, ss.tax: 11439.000, medicare.tax: 4350.000, medicare.additional: 900.000, "@contributions": 16689.000 }
+  - id: us-mfj-700000
+    status: derived
+    inputs: { gross_annual: 700000, filing_status: 2, as_of: 2026-11-12 }
+    expect: { fed.tax: 171268.500, ss.tax: 11439.000, medicare.tax: 10150.000, medicare.additional: 4500.000, "@contributions": 26089.000 }
+  - id: us-mfj-900000
+    status: derived
+    inputs: { gross_annual: 900000, filing_status: 2, as_of: 2026-11-12 }
+    expect: { fed.tax: 243250.500, ss.tax: 11439.000, medicare.tax: 13050.000, medicare.additional: 6300.000, "@contributions": 30789.000 }
+  - id: us-hoh-12000
+    status: derived
+    inputs: { gross_annual: 12000, filing_status: 3, as_of: 2026-11-12 }
+    expect: { fed.tax: 0.000, ss.tax: 744.000, medicare.tax: 174.000, medicare.additional: 0.000, "@contributions": 918.000 }
+  - id: us-hoh-30000
+    status: derived
+    inputs: { gross_annual: 30000, filing_status: 3, as_of: 2026-11-12 }
+    expect: { fed.tax: 585.000, ss.tax: 1860.000, medicare.tax: 435.000, medicare.additional: 0.000, "@contributions": 2295.000 }
+  - id: us-hoh-60000
+    status: derived
+    inputs: { gross_annual: 60000, filing_status: 3, as_of: 2026-11-12 }
+    expect: { fed.tax: 3948.000, ss.tax: 3720.000, medicare.tax: 870.000, medicare.additional: 0.000, "@contributions": 4590.000 }
+  - id: us-hoh-150000
+    status: derived
+    inputs: { gross_annual: 150000, filing_status: 3, as_of: 2026-11-12 }
+    expect: { fed.tax: 20991.000, ss.tax: 9300.000, medicare.tax: 2175.000, medicare.additional: 0.000, "@contributions": 11475.000 }
+  - id: us-hoh-300000
+    status: derived
+    inputs: { gross_annual: 300000, filing_status: 3, as_of: 2026-11-12 }
+    expect: { fed.tax: 63508.500, ss.tax: 11439.000, medicare.tax: 4350.000, medicare.additional: 900.000, "@contributions": 16689.000 }
+  - id: us-hoh-700000
+    status: derived
+    inputs: { gross_annual: 700000, filing_status: 3, as_of: 2026-11-12 }
+    expect: { fed.tax: 204213.500, ss.tax: 11439.000, medicare.tax: 10150.000, medicare.additional: 4500.000, "@contributions": 26089.000 }
+  - id: us-hoh-900000
+    status: derived
+    inputs: { gross_annual: 900000, filing_status: 3, as_of: 2026-11-12 }
+    expect: { fed.tax: 278213.500, ss.tax: 11439.000, medicare.tax: 13050.000, medicare.additional: 6300.000, "@contributions": 30789.000 }
   - id: us-overtime-statutory
     status: derived
     inputs: { wage: 20.00, gross_annual: 40000, as_of: 2026-11-12 }

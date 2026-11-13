@@ -1,4 +1,4 @@
-# Pack specification (schema 1, engine 1.0)
+# Pack specification (schema 1, engine 1.1)
 
 A **pack** is a data-only description of one jurisdiction layer: tax brackets,
 contribution formulas, statutory minimums, and (later) benefit programs. The engine
@@ -38,7 +38,7 @@ catalog (`index.json`).
 | `labels` | no | Display names by language |
 | `sources` | yes | `id -> { authority, title?, url?, retrieved? }` (title or url required) |
 | `parameters` | no | See below |
-| `inputs` | no | Values the app supplies: `name -> { type, label?, default? }` |
+| `inputs` | no | Values the app supplies: `name -> { type, label?, default?, options? }` |
 | `rules` | no | List of `{ id, expr, label?, note?, public? }` |
 | `outputs` | no | Named slots: `slot -> [rule ids]` (child packs use `append`) |
 | `append` | no | Adds rules to a parent's slot |
@@ -106,6 +106,12 @@ one simply contributes nothing for it.
 | slot | `overtime_threshold_hours` | One rule: weekly hours after which the overtime rate applies |
 
 Other inputs a pack declares are shown to the user with their `label` and `default`.
+
+**Choice inputs** (engine 1.1): `type: choice` with `options: [{ value: <number>, label: <text> }, ...]`
+and a `default` that is one of the values. The app shows a drop-down; rules see the chosen number
+(compare it with `==`, e.g. `if(filing_status == 2, ...)`). Values are numbers so saved jobs and the
+rule language stay numeric. A choice without options, with a default not among them, or options on a
+non-choice input are pack errors.
 Tax figures are computed as if the job were the person's only income for a full tax year.
 
 ## Rule language
