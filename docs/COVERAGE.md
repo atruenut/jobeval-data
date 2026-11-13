@@ -69,3 +69,12 @@ All 50 states and DC now have a pack. Re-check the third-party figures against e
 Sources: GOV.UK income tax rates, GOV.UK NI rates and allowances (monthly thresholds 1,048 and 4,189
 match the annual 12,570 and 50,270), Scottish Government rates and bands. Tests are `derived` from
 `tools/reference_gb.py`. Wales and Northern Ireland use the rest-of-UK rates (Wales sets no different rates today).
+
+## New Zealand and Australia
+
+| Pack | Modelled | Source | Not modelled |
+|---|---|---|---|
+| NZ-2026 (1 Apr 2026 to 31 Mar 2027, partial) | Resident income tax (10.5/17.5/30/33/39%), ACC earners' levy 1.75% to a 156,641 cap | Deloitte New Zealand highlights 2026 and Baker Tilly Staples Rodway 2026 Tax Facts (third party; confirm against IRD) | KiwiSaver (optional), student loan, Working for Families, jobseeker support. No statutory overtime |
+| AU-2026 (1 Jul 2026 to 30 Jun 2027, estimate) | Resident income tax with the 16% band cut to 15%, Low Income Tax Offset, Medicare levy | Super Guide (third party; the ATO site was not reachable) | The 2026-27 Medicare thresholds were not announced, so 2025-26 ones are used; Medicare surcharge, HECS-HELP, deductions, proposed 2026-27 Budget measures. Overtime is set by awards, so none |
+
+Ireland is held back: sources agree on the 20/40% rates, 44,000 cut-off, 2,000 credits and USC bands (0.5/2/3/8% with the 2% band to 28,700), but not on PRSI rates after the October 2026 increase.

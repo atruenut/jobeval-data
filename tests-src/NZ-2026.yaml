@@ -1,0 +1,34 @@
+# Golden tests for NZ-2026.
+# status derived: tools/reference_au_nz.py (own arithmetic from Deloitte and Baker Tilly figures; not an official run).
+suite: NZ-2026
+pack: NZ-2026
+tolerance: { abs: 0.01 }
+cases:
+  - id: nz-10000
+    status: derived
+    inputs: { gross_annual: 10000, as_of: 2026-11-13 }
+    expect: { nz.tax: 1050.000, nz.acc: 175.000 }
+  - id: nz-15600
+    status: derived
+    inputs: { gross_annual: 15600, as_of: 2026-11-13 }
+    expect: { nz.tax: 1638.000, nz.acc: 273.000 }
+  - id: nz-40000
+    status: derived
+    inputs: { gross_annual: 40000, as_of: 2026-11-13 }
+    expect: { nz.tax: 5908.000, nz.acc: 700.000 }
+  - id: nz-53500
+    status: derived
+    inputs: { gross_annual: 53500, as_of: 2026-11-13 }
+    expect: { nz.tax: 8270.500, nz.acc: 936.250 }
+  - id: nz-80000
+    status: derived
+    inputs: { gross_annual: 80000, as_of: 2026-11-13 }
+    expect: { nz.tax: 16277.500, nz.acc: 1400.000 }
+  - id: nz-180000
+    status: derived
+    inputs: { gross_annual: 180000, as_of: 2026-11-13 }
+    expect: { nz.tax: 49277.500, nz.acc: 2741.218 }
+  - id: nz-200000
+    status: derived
+    inputs: { gross_annual: 200000, as_of: 2026-11-13 }
+    expect: { nz.tax: 57077.500, nz.acc: 2741.218 }

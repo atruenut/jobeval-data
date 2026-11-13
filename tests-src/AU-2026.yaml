@@ -1,0 +1,42 @@
+# Golden tests for AU-2026.
+# status derived: tools/reference_au_nz.py (own arithmetic from Super Guide figures; not an official run).
+suite: AU-2026
+pack: AU-2026
+tolerance: { abs: 0.01 }
+cases:
+  - id: au-15000
+    status: derived
+    inputs: { gross_annual: 15000, as_of: 2026-11-13 }
+    expect: { au.lito: 700.000, au.tax: 0.000, au.medicare: 0.000 }
+  - id: au-25000
+    status: derived
+    inputs: { gross_annual: 25000, as_of: 2026-11-13 }
+    expect: { au.lito: 700.000, au.tax: 320.000, au.medicare: 0.000 }
+  - id: au-30000
+    status: derived
+    inputs: { gross_annual: 30000, as_of: 2026-11-13 }
+    expect: { au.lito: 700.000, au.tax: 1070.000, au.medicare: 198.900 }
+  - id: au-37500
+    status: derived
+    inputs: { gross_annual: 37500, as_of: 2026-11-13 }
+    expect: { au.lito: 700.000, au.tax: 2195.000, au.medicare: 750.000 }
+  - id: au-45000
+    status: derived
+    inputs: { gross_annual: 45000, as_of: 2026-11-13 }
+    expect: { au.lito: 325.000, au.tax: 3695.000, au.medicare: 900.000 }
+  - id: au-60000
+    status: derived
+    inputs: { gross_annual: 60000, as_of: 2026-11-13 }
+    expect: { au.lito: 100.000, au.tax: 8420.000, au.medicare: 1200.000 }
+  - id: au-66667
+    status: derived
+    inputs: { gross_annual: 66667, as_of: 2026-11-13 }
+    expect: { au.lito: 0.000, au.tax: 10520.100, au.medicare: 1333.340 }
+  - id: au-100000
+    status: derived
+    inputs: { gross_annual: 100000, as_of: 2026-11-13 }
+    expect: { au.lito: 0.000, au.tax: 20520.000, au.medicare: 2000.000 }
+  - id: au-200000
+    status: derived
+    inputs: { gross_annual: 200000, as_of: 2026-11-13 }
+    expect: { au.lito: 0.000, au.tax: 55870.000, au.medicare: 4000.000 }
