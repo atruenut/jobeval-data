@@ -1,0 +1,38 @@
+# Golden tests for IE-2026.
+# status derived: tools/reference_au_nz.py (own arithmetic from gov.ie, Grant Thornton and BrightPay figures; not an official run).
+suite: IE-2026
+pack: IE-2026
+tolerance: { abs: 0.01 }
+cases:
+  - id: ie-10000
+    status: derived
+    inputs: { gross_annual: 10000, as_of: 2026-11-13 }
+    expect: { ie.tax: 0.000, ie.usc: 0.000, ie.prsi: 0.000 }
+  - id: ie-18304
+    status: derived
+    inputs: { gross_annual: 18304, as_of: 2026-11-13 }
+    expect: { ie.tax: 0.000, ie.usc: 185.900, ie.prsi: 0.000 }
+  - id: ie-20000
+    status: derived
+    inputs: { gross_annual: 20000, as_of: 2026-11-13 }
+    expect: { ie.tax: 0.000, ie.usc: 219.820, ie.prsi: 506.167 }
+  - id: ie-22048
+    status: derived
+    inputs: { gross_annual: 22048, as_of: 2026-11-13 }
+    expect: { ie.tax: 409.600, ie.usc: 260.780, ie.prsi: 934.284 }
+  - id: ie-30000
+    status: derived
+    inputs: { gross_annual: 30000, as_of: 2026-11-13 }
+    expect: { ie.tax: 2000.000, ie.usc: 432.820, ie.prsi: 1271.250 }
+  - id: ie-44000
+    status: derived
+    inputs: { gross_annual: 44000, as_of: 2026-11-13 }
+    expect: { ie.tax: 4800.000, ie.usc: 852.820, ie.prsi: 1864.500 }
+  - id: ie-60000
+    status: derived
+    inputs: { gross_annual: 60000, as_of: 2026-11-13 }
+    expect: { ie.tax: 11200.000, ie.usc: 1332.820, ie.prsi: 2542.500 }
+  - id: ie-100000
+    status: derived
+    inputs: { gross_annual: 100000, as_of: 2026-11-13 }
+    expect: { ie.tax: 27200.000, ie.usc: 4030.620, ie.prsi: 4237.500 }
